@@ -1,6 +1,6 @@
 <x-app-layout>
     <section class="py-16 bg-gray-900">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-20xl mx-auto px-6">
             @php
                 $items = \App\Models\GalleryItem::with('huntingType')->latest()->get();
             @endphp

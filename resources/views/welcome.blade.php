@@ -23,11 +23,11 @@
             padding: 10px 20px;
             text-decoration: none;
             color: #fff;
-            background-color: #ef4444;
+            background-color: #24961aff;
             border-radius: 5px;
         }
         a:hover {
-            background-color: #dc2626;
+            background-color: #24961aff;
         }
     </style>
 </head>

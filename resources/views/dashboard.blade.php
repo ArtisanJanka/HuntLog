@@ -1,5 +1,6 @@
 <x-app-layout>
-    <!-- Hero Section -->
+    
+<!-- Hero Section -->
     <section class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen flex flex-col justify-center items-center py-20 px-6">
         <div class="text-center max-w-3xl">
             <h1 class="text-6xl font-extrabold text-emerald-400 mb-6">
