@@ -39,49 +39,76 @@
     </div>
 
     {{-- Google Maps API --}}
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMO7_a2R-JgJLV2gvV7n9Q7nBOlZq1114&callback=initMap&v=weekly" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1AR6ByWMwhdq_M4Xv3-nJXh4GBecWdlA&v=weekly&map_ids=8c002f2c7af3d5392f4d5e45" async defer></script>
 
     <script>
-        // Initialize the map after everything has loaded
-        function loadMap() {
-            const map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 56.9496, lng: 24.1052 }, // Rīga
+        async function initMap() {
+            const { Map } = await google.maps.importLibrary("maps");
+            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+            const map = new Map(document.getElementById("map"), {
+                center: { lat: 56.9496, lng: 24.1052 }, // Riga
                 zoom: 7,
-                mapTypeId: "terrain"
+                mapId: "8c002f2c7af3d5392f4d5e45", // replace with your actual Map ID
             });
 
-            // Click to place marker
-            map.addListener("click", function(e) {
-                placeMarker(e.latLng);
-            });
-
-            // Load existing waypoints
+            // Add existing waypoints
             @foreach($waypoints as $waypoint)
-                new google.maps.Marker({
+                new AdvancedMarkerElement({
                     position: { lat: {{ $waypoint->latitude }}, lng: {{ $waypoint->longitude }} },
-                    map: map,
+                    map,
                     title: "{{ $waypoint->name }}"
                 });
             @endforeach
 
-            // Global function for placing markers
-            window.placeMarker = function(latLng) {
-                new google.maps.Marker({
-                    position: latLng,
-                    map: map
-                });
-                document.getElementById("latitude").value = latLng.lat();
-                document.getElementById("longitude").value = latLng.lng();
+            // Live user location
+            if (navigator.geolocation) {
+                let userMarker = null;
+
+                // Create DOM node for blue dot
+                const createBlueDot = () => {
+                    const dot = document.createElement("div");
+                    dot.style.width = "16px";
+                    dot.style.height = "16px";
+                    dot.style.backgroundColor = "#4285F4";
+                    dot.style.border = "2px solid #fff";
+                    dot.style.borderRadius = "50%";
+                    return dot;
+                };
+
+                navigator.geolocation.watchPosition(
+                    (pos) => {
+                        const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+
+                        if (!userMarker) {
+                            userMarker = new AdvancedMarkerElement({
+                                position: userPos,
+                                map,
+                                title: "Your Location",
+                                content: createBlueDot()
+                            });
+                            map.setCenter(userPos);
+                            map.setZoom(14);
+                        } else {
+                            userMarker.position = userPos; // smooth updates
+                        }
+                    },
+                    (err) => console.error("Geolocation error", err),
+                    { enableHighAccuracy: true }
+                );
             }
+
+            // Click to add waypoint
+            map.addListener("click", (e) => {
+                new AdvancedMarkerElement({
+                    position: e.latLng,
+                    map
+                });
+                document.getElementById("latitude").value = e.latLng.lat();
+                document.getElementById("longitude").value = e.latLng.lng();
+            });
         }
 
-        // Wait until Google Maps script and page are loaded
-        window.addEventListener('load', function() {
-            if (typeof google !== 'undefined') {
-                loadMap();
-            } else {
-                console.error('Google Maps did not load.');
-            }
-        });
+        window.addEventListener("load", initMap);
     </script>
 </x-app-layout>

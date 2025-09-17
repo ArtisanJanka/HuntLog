@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -9,77 +10,96 @@ use Illuminate\Support\Facades\Storage;
 
 class GalleryItemController extends Controller
 {
+    /**
+     * Show all gallery items.
+     */
     public function index()
     {
-        $items = GalleryItem::with('huntingType')->latest()->paginate(20);
-        return view('admin.gallery.index', compact('items'));
+        $galleryItems = GalleryItem::with('huntingType')->latest()->get();
+        return view('admin.gallery.index', compact('galleryItems'));
     }
 
+    /**
+     * Show the create form.
+     */
     public function create()
     {
-        $types = HuntingType::orderBy('name')->get();
+        $types = HuntingType::all();
         return view('admin.gallery.create', compact('types'));
     }
 
+    /**
+     * Store a new gallery item.
+     */
     public function store(Request $request)
     {
         $data = $request->validate([
-            'hunting_type_id' => ['required','exists:hunting_types,id'],
-            'title' => ['nullable','string','max:255'],
-            'image' => ['required','image','max:4096'], // 4MB
+            'hunting_type_id' => 'required|exists:hunting_types,id',
+            'title' => 'nullable|string|max:255',
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'link'  => 'nullable|url',
         ]);
 
         $path = $request->file('image')->store('gallery', 'public');
 
-        $item = GalleryItem::create([
-            'hunting_type_id' => $data['hunting_type_id'],
-            'title' => $data['title'] ?? null,
-            'image_path' => $path,
+        GalleryItem::create([
+            'title'          => $data['title'],
+            'image_path'     => $path,
+            'hunting_type_id'=> $data['hunting_type_id'],
+            'link'           => $data['link'] ?? null,
         ]);
 
-        return redirect()->route('admin.gallery.index')->with('status','Image created.');
+        return redirect()->route('admin.gallery.index')
+                         ->with('success', 'Gallery item created successfully!');
     }
 
     public function edit(GalleryItem $gallery)
     {
-        $types = HuntingType::orderBy('name')->get();
-        return view('admin.gallery.edit', ['item' => $gallery, 'types' => $types]);
+        $types = HuntingType::all();
+        return view('admin.gallery.edit', [
+            'item'  => $gallery,
+            'types' => $types,
+        ]);
     }
 
+    /**
+     * Update an existing gallery item.
+     */
     public function update(Request $request, GalleryItem $gallery)
     {
         $data = $request->validate([
-            'hunting_type_id' => ['required','exists:hunting_types,id'],
-            'title' => ['nullable','string','max:255'],
-            'image' => ['nullable','image','max:4096'],
+            'hunting_type_id' => 'required|exists:hunting_types,id',
+            'title'           => 'nullable|string|max:255',
+            'image'           => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'link'            => 'nullable|url',
         ]);
 
-        $update = [
-            'hunting_type_id' => $data['hunting_type_id'],
-            'title' => $data['title'] ?? null,
-        ];
-
         if ($request->hasFile('image')) {
-            // delete old
+            // delete old image if exists
             if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
                 Storage::disk('public')->delete($gallery->image_path);
             }
-            $update['image_path'] = $request->file('image')->store('gallery','public');
+            $data['image_path'] = $request->file('image')->store('gallery', 'public');
         }
 
-        $gallery->update($update);
+        $gallery->update($data);
 
-        return redirect()->route('admin.gallery.index')->with('status','Image updated.');
+        return redirect()->route('admin.gallery.index')
+                         ->with('success', 'Gallery item updated successfully!');
     }
 
+    /**
+     * Delete a gallery item.
+     */
     public function destroy(GalleryItem $gallery)
     {
         if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
             Storage::disk('public')->delete($gallery->image_path);
         }
+
         $gallery->delete();
-        return back()->with('status','Image deleted.');
+
+        return redirect()->route('admin.gallery.index')
+                         ->with('success', 'Gallery item deleted successfully!');
     }
 }
-
-?>

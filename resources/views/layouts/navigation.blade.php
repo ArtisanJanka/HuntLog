@@ -26,6 +26,10 @@
                     @if(Auth::user()->is_admin)
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Admin</x-nav-link>
                     @endif
+
+                    @if(Auth::user()->is_leader)
+                        <x-nav-link :href="route('leader.dashboard')" :active="request()->routeIs('leader.dashboard')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Leader</x-nav-link>
+                    @endif
                 @endauth
             </div>
 
@@ -76,9 +80,14 @@
             <x-responsive-nav-link :href="route('contacts')" class="text-gray-200 hover:text-emerald-400">Kontakti</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('calendar')" class="text-gray-200 hover:text-emerald-400">Kalendārs</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('maps.index')" class="text-gray-200 hover:text-emerald-400">Karte</x-responsive-nav-link>
+
             @auth
                 @if(Auth::user()->is_admin)
                     <x-responsive-nav-link :href="route('admin.dashboard')" class="text-gray-200 hover:text-emerald-400">Admin</x-responsive-nav-link>
+                @endif
+
+                @if(Auth::user()->is_leader)
+                    <x-responsive-nav-link :href="route('leader.dashboard')" class="text-gray-200 hover:text-emerald-400">Leader</x-responsive-nav-link>
                 @endif
             @endauth
         </div>

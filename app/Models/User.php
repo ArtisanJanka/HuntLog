@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_leader',
+        'status',
     ];
 
     /**
@@ -42,4 +44,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // Users that belong to a leader
+// Leader (User) has many team members
+public function team()
+{
+    return $this->hasMany(User::class, 'leader_id');
+}
+
+
+// If you want, a user belongs to a leader
+public function leader()
+{
+    return $this->belongsTo(User::class, 'leader_id');
+}
+
+
 }

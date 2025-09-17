@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\GalleryItem;
 use App\Models\HuntingType;
 use Illuminate\Http\Request;
@@ -23,8 +24,8 @@ class GalleryItemController extends Controller
      */
     public function create()
     {
-        $types = HuntingType::all();
-        return view('admin.gallery.create', compact('types'));
+        $huntingTypes = HuntingType::all(); // consistent naming
+        return view('admin.gallery.create', compact('huntingTypes'));
     }
 
     /**
@@ -39,15 +40,9 @@ class GalleryItemController extends Controller
             'link' => 'nullable|url',
         ]);
 
-        // Store image in storage/app/public/gallery
-        $path = $request->file('image')->store('gallery', 'public');
+        $data['image_path'] = $request->file('image')->store('gallery', 'public');
 
-        GalleryItem::create([
-            'title' => $data['title'],
-            'image_path' => $path,
-            'hunting_type_id' => $data['hunting_type_id'],
-            'link' => $data['link'] ?? null,
-        ]);
+        GalleryItem::create($data);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery item created successfully!');
     }
@@ -55,20 +50,16 @@ class GalleryItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(GalleryItem $gallery)
+    public function edit(GalleryItem $galleryItem)
     {
-    $types = \App\Models\HuntingType::all(); // to populate the dropdown
-    return view('admin.gallery.edit', [
-        'item' => $gallery,
-        'types' => $types
-    ]);
+        $huntingTypes = HuntingType::all();
+        return view('admin.gallery.edit', compact('galleryItem', 'huntingTypes'));
     }
-
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, GalleryItem $gallery)
+    public function update(Request $request, GalleryItem $galleryItem)
     {
         $data = $request->validate([
             'hunting_type_id' => 'required|exists:hunting_types,id',
@@ -77,16 +68,14 @@ class GalleryItemController extends Controller
             'link' => 'nullable|url',
         ]);
 
-        // Replace image if uploaded
         if ($request->hasFile('image')) {
-            // delete old
-            if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
-                Storage::disk('public')->delete($gallery->image_path);
+            if ($galleryItem->image_path && Storage::disk('public')->exists($galleryItem->image_path)) {
+                Storage::disk('public')->delete($galleryItem->image_path);
             }
             $data['image_path'] = $request->file('image')->store('gallery', 'public');
         }
 
-        $gallery->update($data);
+        $galleryItem->update($data);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery item updated successfully!');
     }
@@ -94,13 +83,13 @@ class GalleryItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(GalleryItem $gallery)
+    public function destroy(GalleryItem $galleryItem)
     {
-        if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
-            Storage::disk('public')->delete($gallery->image_path);
+        if ($galleryItem->image_path && Storage::disk('public')->exists($galleryItem->image_path)) {
+            Storage::disk('public')->delete($galleryItem->image_path);
         }
 
-        $gallery->delete();
+        $galleryItem->delete();
 
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery item deleted successfully!');
     }

@@ -1,6 +1,5 @@
 <x-app-layout>
     
-<!-- Hero Section -->
     <section class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-gray-100 min-h-screen flex flex-col justify-center items-center py-20 px-6">
         <div class="text-center max-w-3xl">
             <h1 class="text-6xl font-extrabold text-emerald-400 mb-6">
@@ -18,7 +17,6 @@
         </div>
     </section>
 
-    <!-- Features Section -->
     <section class="bg-gray-900 text-gray-100 min-h-screen flex flex-col justify-center px-6">
         <div class="max-w-7xl mx-auto text-center">
             <h2 class="text-4xl font-bold text-emerald-400 mb-12">Ko Tu vari darīt?</h2>
@@ -43,9 +41,7 @@
         </div>
     </section>
 
-    <!-- Call to Action Section with Background Image -->
     <section class="relative min-h-screen flex flex-col justify-center items-center px-6 text-gray-100">
-        <!-- Background image -->
         <div class="absolute inset-0">
             <img src="https://images.unsplash.com/photo-1558022103-603c34ab10ce?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9ycmVzdHxlbnwwfHwwfHx8MA%3D%3D" 
                  alt="Forest background" 
@@ -53,7 +49,6 @@
             <div class="absolute inset-0 bg-gray-900/75"></div> <!-- Dark overlay for readability -->
         </div>
 
-        <!-- Content -->
         <div class="relative max-w-3xl text-center">
             <h2 class="text-4xl font-bold text-emerald-400 mb-4">Sāc savu medību pieredzi ar HuntLog!</h2>
             <p class="text-lg text-gray-200 mb-8">Reģistrējies jau šodien un pievienojies medību entuziastu kopienai.</p>
@@ -64,7 +59,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-gray-400 py-6">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-6">
             <p>&copy; {{ date('Y') }} HuntLog. Visas tiesības aizsargātas.</p>

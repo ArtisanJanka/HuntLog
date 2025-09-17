@@ -8,6 +8,8 @@ use App\Models\HuntingType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+
+
 class GalleryController extends Controller
 {
     public function index()
