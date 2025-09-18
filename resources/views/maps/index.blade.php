@@ -26,6 +26,21 @@
             </button>
         </form>
 
+        {{-- Polygon Save Form --}}
+        <form id="polygonForm" method="POST" action="{{ route('polygons.store') }}" class="mt-6 space-y-4">
+            @csrf
+            <input type="hidden" name="coordinates" id="polygonCoordinates">
+
+            <div>
+                <label class="block text-gray-700 font-semibold">Polygon Name</label>
+                <input type="text" name="name" class="w-full bg-gray-100 text-gray-900 rounded p-2 border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500" required>
+            </div>
+
+            <button type="submit" class="px-4 py-2 bg-emerald-600 rounded text-white hover:bg-emerald-700">
+                Save Polygon
+            </button>
+        </form>
+
         {{-- Existing Waypoints --}}
         <h2 class="text-2xl font-semibold text-gray-800 mt-10 mb-4">Jūsu punkti</h2>
         <ul class="space-y-2">
@@ -37,19 +52,20 @@
             @endforeach
         </ul>
     </div>
-
-    {{-- Google Maps API --}}
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1AR6ByWMwhdq_M4Xv3-nJXh4GBecWdlA&v=weekly&map_ids=8c002f2c7af3d5392f4d5e45" async defer></script>
+    
+    {{-- Google Maps API with Drawing Library --}}
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1AR6ByWMwhdq_M4Xv3-nJXh4GBecWdlA&libraries=drawing&v=weekly&map_ids=8c002f2c7af3d5392f4d5e45" async defer></script>
 
     <script>
         async function initMap() {
             const { Map } = await google.maps.importLibrary("maps");
             const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
+            // Initialize map
             const map = new Map(document.getElementById("map"), {
                 center: { lat: 56.9496, lng: 24.1052 }, // Riga
                 zoom: 7,
-                mapId: "8c002f2c7af3d5392f4d5e45", // replace with your actual Map ID
+                mapId: "8c002f2c7af3d5392f4d5e45",
             });
 
             // Add existing waypoints
@@ -65,37 +81,39 @@
             if (navigator.geolocation) {
                 let userMarker = null;
 
-                // Create DOM node for blue dot
-                const createBlueDot = () => {
-                    const dot = document.createElement("div");
-                    dot.style.width = "16px";
-                    dot.style.height = "16px";
-                    dot.style.backgroundColor = "#4285F4";
-                    dot.style.border = "2px solid #fff";
-                    dot.style.borderRadius = "50%";
-                    return dot;
-                };
-
                 navigator.geolocation.watchPosition(
                     (pos) => {
-                        const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                        const userPos = {
+                            lat: pos.coords.latitude,
+                            lng: pos.coords.longitude,
+                        };
 
                         if (!userMarker) {
+                            const markerDiv = document.createElement("div");
+                            markerDiv.style.width = "16px";
+                            markerDiv.style.height = "16px";
+                            markerDiv.style.backgroundColor = "#4285F4";
+                            markerDiv.style.border = "2px solid #fff";
+                            markerDiv.style.borderRadius = "50%";
+
                             userMarker = new AdvancedMarkerElement({
                                 position: userPos,
                                 map,
                                 title: "Your Location",
-                                content: createBlueDot()
+                                content: markerDiv
                             });
+
                             map.setCenter(userPos);
                             map.setZoom(14);
                         } else {
-                            userMarker.position = userPos; // smooth updates
+                            userMarker.position = userPos;
                         }
                     },
                     (err) => console.error("Geolocation error", err),
-                    { enableHighAccuracy: true }
+                    { enableHighAccuracy: true, maximumAge: 0 }
                 );
+            } else {
+                console.error("Geolocation not supported by this browser.");
             }
 
             // Click to add waypoint
@@ -106,6 +124,62 @@
                 });
                 document.getElementById("latitude").value = e.latLng.lat();
                 document.getElementById("longitude").value = e.latLng.lng();
+            });
+
+            // Drawing Manager
+            const drawingManager = new google.maps.drawing.DrawingManager({
+                drawingMode: null,
+                drawingControl: true,
+                drawingControlOptions: {
+                    position: google.maps.ControlPosition.TOP_CENTER,
+                    drawingModes: [
+                        google.maps.drawing.OverlayType.POLYGON,
+                        google.maps.drawing.OverlayType.POLYLINE
+                    ]
+                },
+                polylineOptions: {
+                    strokeColor: "#128720ff",
+                    strokeWeight: 3,
+                    clickable: true,
+                    editable: true,
+                    geodesic: true
+                },
+                polygonOptions: {
+                    fillColor: "#128720ff",
+                    fillOpacity: 0.2,
+                    strokeWeight: 3,
+                    strokeColor: "#128720ff",
+                    clickable: true,
+                    editable: true,
+                    zIndex: 1
+                }
+            });
+
+            drawingManager.setMap(map);
+
+            // Capture drawn shapes
+            google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
+                let path = [];
+                if (event.type === google.maps.drawing.OverlayType.POLYGON) {
+                    path = event.overlay.getPath().getArray().map(latlng => ({
+                        lat: latlng.lat(),
+                        lng: latlng.lng()
+                    }));
+
+                    // Save coordinates to hidden input
+                    document.getElementById('polygonCoordinates').value = JSON.stringify(path);
+
+                    // Optional: automatically submit the form
+                    // document.getElementById('polygonForm').submit();
+                } else if (event.type === google.maps.drawing.OverlayType.POLYLINE) {
+                    path = event.overlay.getPath().getArray().map(latlng => ({
+                        lat: latlng.lat(),
+                        lng: latlng.lng()
+                    }));
+                    console.log("Polyline coordinates:", path);
+                }
+
+                console.log("Coordinates ready to save:", path);
             });
         }
 

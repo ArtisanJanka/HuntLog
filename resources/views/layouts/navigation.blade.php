@@ -20,7 +20,7 @@
                 <x-nav-link :href="route('gallery')" :active="request()->routeIs('gallery')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Gallerija</x-nav-link>
                 <x-nav-link :href="route('contacts')" :active="request()->routeIs('contacts')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Kontakti</x-nav-link>
                 <x-nav-link :href="route('calendar')" :active="request()->routeIs('calendar')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Kalendārs</x-nav-link>
-                <x-nav-link :href="route('maps.index')" :active="request()->routeIs('maps.index')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Karte</x-nav-link>
+                <x-nav-link :href="route('map.index')" :active="request()->routeIs('maps.index')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Karte</x-nav-link>
 
                 @auth
                     @if(Auth::user()->is_admin)
@@ -79,7 +79,7 @@
             <x-responsive-nav-link :href="route('gallery')" class="text-gray-200 hover:text-emerald-400">Gallerija</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('contacts')" class="text-gray-200 hover:text-emerald-400">Kontakti</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('calendar')" class="text-gray-200 hover:text-emerald-400">Kalendārs</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('maps.index')" class="text-gray-200 hover:text-emerald-400">Karte</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('map.index')" class="text-gray-200 hover:text-emerald-400">Karte</x-responsive-nav-link>
 
             @auth
                 @if(Auth::user()->is_admin)

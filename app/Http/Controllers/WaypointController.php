@@ -4,29 +4,51 @@ namespace App\Http\Controllers;
 
 use App\Models\Waypoint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WaypointController extends Controller
 {
-    // Display map with user's waypoints
-    public function index()
+    // Show profile page with user waypoints
+    public function profile()
     {
-        $waypoints = Waypoint::where('user_id', auth()->id())->get();
+        $user = Auth::user(); 
+    $waypoints = Waypoint::where('user_id', $user->id)->get();
+
+    return view('profile.edit', compact('user', 'waypoints'));
+    }
+
+    // Show map page (all waypoints)
+    public function map()
+    {
+        $waypoints = Waypoint::where('user_id', Auth::id())->get();
         return view('maps.index', compact('waypoints'));
     }
 
-    // Store a new waypoint
+    // Show single waypoint on map
+    public function show(Waypoint $waypoint)
+    {
+        $this->authorize('view', $waypoint); // ensure only owner can view
+        return view('map.show', compact('waypoint'));
+    }
+
+    // Store new waypoint
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
+            'description' => 'nullable|string',
         ]);
 
-        $data['user_id'] = auth()->id();
-        Waypoint::create($data);
+        Waypoint::create([
+            'user_id' => Auth::id(),
+            'name' => $request->name,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'description' => $request->description,
+        ]);
 
-        return redirect()->route('maps.index')->with('success', 'Waypoint added!');
+        return back()->with('success', 'Waypoint saved successfully!');
     }
 }

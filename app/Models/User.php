@@ -45,6 +45,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function waypoints()
+{
+    return $this->hasMany(Waypoint::class);
+}
+
+
     // Users that belong to a leader
 // Leader (User) has many team members
 public function team()
@@ -58,6 +64,8 @@ public function leader()
 {
     return $this->belongsTo(User::class, 'leader_id');
 }
+
+
 
 
 }
