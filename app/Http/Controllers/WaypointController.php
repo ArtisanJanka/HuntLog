@@ -2,53 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Waypoint;
 use Illuminate\Http\Request;
+use App\Models\Waypoint;
+use App\Models\Polygon;
 use Illuminate\Support\Facades\Auth;
 
 class WaypointController extends Controller
 {
-    // Show profile page with user waypoints
-    public function profile()
+    // Show full map with all waypoints and polygons
+    public function showMap()
     {
-        $user = Auth::user(); 
-    $waypoints = Waypoint::where('user_id', $user->id)->get();
+        $user = auth()->user(); // current logged-in user
+        $waypoints = $user->waypoints()->get(); // fetch all waypoints
+        $polygons = $user->polygons()->get();   // fetch all polygons
 
-    return view('profile.edit', compact('user', 'waypoints'));
+        return view('maps.index', compact('waypoints', 'polygons'));
     }
 
-    // Show map page (all waypoints)
-    public function map()
-    {
-        $waypoints = Waypoint::where('user_id', Auth::id())->get();
-        return view('maps.index', compact('waypoints'));
-    }
-
-    // Show single waypoint on map
+    // Show single waypoint (optional)
     public function show(Waypoint $waypoint)
     {
-        $this->authorize('view', $waypoint); // ensure only owner can view
-        return view('map.show', compact('waypoint'));
+        $user = Auth::user();
+
+        // Only return the waypoint if it belongs to the user
+        if ($waypoint->user_id !== $user->id) {
+            abort(403);
+        }
+
+        return view('maps.show', [
+            'waypoints' => [$waypoint], // single waypoint in array
+            'polygons' => []
+        ]);
     }
 
-    // Store new waypoint
-    public function store(Request $request)
+    // Show single polygon
+    public function showPolygon(Polygon $polygon)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'description' => 'nullable|string',
-        ]);
+        $user = Auth::user();
 
-        Waypoint::create([
-            'user_id' => Auth::id(),
-            'name' => $request->name,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'description' => $request->description,
-        ]);
+        if ($polygon->user_id !== $user->id) {
+            abort(403);
+        }
 
-        return back()->with('success', 'Waypoint saved successfully!');
+        // Ensure coordinates are decoded if stored as JSON
+        $coordinates = is_string($polygon->coordinates) ? json_decode($polygon->coordinates, true) : $polygon->coordinates;
+
+        return view('maps.show', [
+            'waypoints' => [],
+            'polygons' => [
+                [
+                    'name' => $polygon->name,
+                    'coordinates' => $coordinates
+                ]
+            ]
+        ]);
     }
+    public function storePolygon(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'coordinates' => 'required|string',
+    ]);
+
+    Polygon::create([
+        'name' => $request->name,
+        'coordinates' => $request->coordinates,
+        'user_id' => auth()->id(),
+    ]);
+
+    return redirect()->back()->with('success', 'Polygon saved!');
+}
+
 }

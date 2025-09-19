@@ -39,6 +39,6 @@ class GalleryItem extends Model
      */
     public function joinUrl(): string
     {
-        return $this->link ?? '#';
+        return route('join-group.store', ['group_name' => $this->huntingType->name]);
     }
 }

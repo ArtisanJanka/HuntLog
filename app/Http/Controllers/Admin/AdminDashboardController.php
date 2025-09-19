@@ -6,16 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\GalleryItem;
 use App\Models\HuntingType;
+use App\Models\Contact;
+
 
 class AdminDashboardController extends Controller
 {
     public function index()
     {
         $galleryCount = GalleryItem::count();
-        $huntingTypeCount = HuntingType::count();
-        $users = User::all();
+    $huntingTypeCount = HuntingType::count();
+    $users = User::all();
+    $messages = Contact::latest()->take(5)->get(); // last 5 messages
+    $messageCount = Contact::count();
 
-        return view('admin.dashboard', compact('galleryCount', 'huntingTypeCount', 'users'));
+        return view('admin.dashboard', compact(
+        'galleryCount',
+        'huntingTypeCount',
+        'users',
+        'messages',
+        'messageCount'
+    ));
     }
 
     public function makeLeader(User $user)

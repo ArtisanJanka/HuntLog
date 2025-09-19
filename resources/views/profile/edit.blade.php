@@ -1,59 +1,41 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+    <div class="max-w-7xl mx-auto p-6">
 
-    <div class="py-12 space-y-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <header>
+            <h2 class="text-lg font-medium text-gray-900">
+                {{ __('Profile Information') }}
+            </h2>
 
-            {{-- Profile Information --}}
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-6">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+            <p class="mt-1 text-sm text-gray-600">
+                {{ __("Update your account's profile information and email address.") }}
+            </p>
+        </header>
 
-            {{-- Update Password --}}
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-6">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
+        {{-- Include the update form --}}
+        @include('profile.partials.update-profile-information-form', ['user' => $user])
 
-            {{-- Delete User --}}
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-6">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
+        {{-- Include password update form --}}
+        @include('profile.partials.update-password-form', ['user' => $user])
 
-            {{-- User Waypoints --}}
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">{{ __('Your Waypoints') }}</h2>
+        {{-- User Polygons List --}}
+        <section class="mt-10">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Jūsu poligoni</h2>
+
+            @if($polygons->isEmpty())
+                <p class="text-gray-600">Jums vēl nav saglabātu poligonu.</p>
+            @else
                 <ul class="space-y-2">
-                    @forelse($waypoints as $waypoint)
-                        <li class="bg-gray-100 p-3 rounded flex justify-between items-center">
-                            <div>
-                                <strong>{{ $waypoint->name }}</strong>
-                                <span class="text-sm text-gray-600">
-                                    ({{ $waypoint->latitude }}, {{ $waypoint->longitude }})
-                                </span>
-                                <p class="text-gray-700">{{ $waypoint->description }}</p>
+                    @foreach($polygons as $polygon)
+                        <li class="bg-gray-200 text-gray-900 p-3 rounded">
+                            <span class="font-semibold">{{ $polygon->name }}</span>
+                            {{-- Optional: show coordinates as JSON --}}
+                            <div class="text-sm text-gray-700 mt-1">
+                                {{ $polygon->coordinates }}
                             </div>
-                            <a href="{{ route('map.show', $waypoint->id) }}" class="text-indigo-600 hover:underline">
-                                View on Map
-                            </a>
                         </li>
-                    @empty
-                        <li class="text-gray-500">No waypoints yet.</li>
-                    @endforelse
+                    @endforeach
                 </ul>
-            </div>
-
-            {{-- User Polygons --}}
-            
-        </div>
+            @endif
+        </section>
     </div>
 </x-app-layout>

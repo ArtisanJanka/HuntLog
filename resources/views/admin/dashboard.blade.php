@@ -4,7 +4,7 @@
         <p class="text-black-400 mb-8">Welcome, {{ Auth::user()->name }}! Manage the system here.</p>
 
         <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold text-gray-200 mb-2">Gallery Items</h2>
                 <p class="text-gray-400">Total: {{ $galleryCount }}</p>
@@ -16,10 +16,16 @@
                 <p class="text-gray-400">Total: {{ $huntingTypeCount }}</p>
                 <a href="{{ route('admin.hunting-types.index') }}" class="text-emerald-500">Manage Types</a>
             </div>
+
+            <div class="bg-gray-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-200 mb-2">Messages</h2>
+                <p class="text-gray-400">Total: {{ $messageCount }}</p>
+                <a href="{{ route('admin.messages.index') }}" class="text-emerald-500">View All Messages</a>
+            </div>
         </div>
 
         <!-- Users -->
-        <div class="bg-gray-800 rounded shadow-md overflow-hidden">
+        <div class="bg-gray-800 rounded shadow-md overflow-hidden mb-10">
             <h2 class="text-xl font-semibold text-gray-200 p-4 border-b border-gray-700">All Users</h2>
             <table class="w-full text-left">
                 <thead class="bg-gray-700">
@@ -53,6 +59,35 @@
                         </td>
                     </tr>
                     @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Messages -->
+        <div class="bg-gray-800 rounded shadow-md overflow-hidden">
+            <h2 class="text-xl font-semibold text-gray-200 p-4 border-b border-gray-700">Recent Messages</h2>
+            <table class="w-full text-left">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 text-white">Name</th>
+                        <th class="px-4 py-2 text-white">Email</th>
+                        <th class="px-4 py-2 text-white">Message</th>
+                        <th class="px-4 py-2 text-white">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($messages as $msg)
+                    <tr class="border-b border-gray-700">
+                        <td class="px-4 py-2 text-white">{{ $msg->name }}</td>
+                        <td class="px-4 py-2 text-white">{{ $msg->email }}</td>
+                        <td class="px-4 py-2 text-white">{{ Str::limit($msg->message, 50) }}</td>
+                        <td class="px-4 py-2 text-white">{{ $msg->created_at->format('d M Y H:i') }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-2 text-gray-400">No messages yet.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

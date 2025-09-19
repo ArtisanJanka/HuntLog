@@ -40,19 +40,19 @@
                 Save Polygon
             </button>
         </form>
-
+    
         {{-- Existing Waypoints --}}
-        <h2 class="text-2xl font-semibold text-gray-800 mt-10 mb-4">Jūsu punkti</h2>
+        
         <ul class="space-y-2">
             @foreach($waypoints as $waypoint)
-                <li class="bg-gray-200 text-gray-900 p-3 rounded flex justify-between">
+                <li class="bg-gray-200 text-gray-900 p-3 rounded">
                     <span>{{ $waypoint->name }} ({{ $waypoint->latitude }}, {{ $waypoint->longitude }})</span>
-                    <a href="#" class="text-emerald-600 hover:underline">Skatīt</a>
+                    {{-- View link removed --}}
                 </li>
             @endforeach
         </ul>
     </div>
-    
+
     {{-- Google Maps API with Drawing Library --}}
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1AR6ByWMwhdq_M4Xv3-nJXh4GBecWdlA&libraries=drawing&v=weekly&map_ids=8c002f2c7af3d5392f4d5e45" async defer></script>
 
@@ -63,7 +63,7 @@
 
             // Initialize map
             const map = new Map(document.getElementById("map"), {
-                center: { lat: 56.9496, lng: 24.1052 }, // Riga
+                center: { lat: 56.9496, lng: 24.1052 },
                 zoom: 7,
                 mapId: "8c002f2c7af3d5392f4d5e45",
             });
@@ -168,9 +168,6 @@
 
                     // Save coordinates to hidden input
                     document.getElementById('polygonCoordinates').value = JSON.stringify(path);
-
-                    // Optional: automatically submit the form
-                    // document.getElementById('polygonForm').submit();
                 } else if (event.type === google.maps.drawing.OverlayType.POLYLINE) {
                     path = event.overlay.getPath().getArray().map(latlng => ({
                         lat: latlng.lat(),

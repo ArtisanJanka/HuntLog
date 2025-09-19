@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Leader;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\GroupRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,13 +18,13 @@ class LeaderDashboardController extends Controller
     {
         $leader = Auth::user();
 
-        // Users assigned to this leader and approved
+        // Users already assigned to this leader and approved
         $users = User::where('leader_id', $leader->id)
                      ->where('status', 'approved')
                      ->get();
 
-        // Users assigned to this leader but still pending
-        $requests = User::where('leader_id', $leader->id)
+        // Pending join requests for this leader
+        $requests = GroupRequest::with('user', 'huntingType')
                         ->where('status', 'pending')
                         ->get();
 
@@ -53,30 +54,22 @@ class LeaderDashboardController extends Controller
     }
 
     /**
-     * Approve a pending user request.
+     * Approve a pending group request.
      */
-    public function acceptRequest(User $user)
+    public function acceptRequest(GroupRequest $request)
     {
-        // Ensure the user belongs to this leader
-        if ($user->leader_id !== Auth::id()) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $user->update(['status' => 'approved']);
+        // Optionally, you could assign the user to this leader here
+        $request->update(['status' => 'approved']);
+        
         return back()->with('success', 'Request approved.');
     }
 
     /**
-     * Reject a pending user request.
+     * Reject a pending group request.
      */
-    public function rejectRequest(User $user)
+    public function rejectRequest(GroupRequest $request)
     {
-        // Ensure the user belongs to this leader
-        if ($user->leader_id !== Auth::id()) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $user->delete();
+        $request->delete();
         return back()->with('success', 'Request rejected.');
     }
 }

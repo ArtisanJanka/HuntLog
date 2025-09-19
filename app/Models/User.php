@@ -50,6 +50,11 @@ class User extends Authenticatable
     return $this->hasMany(Waypoint::class);
 }
 
+public function polygons()
+    {
+        return $this->hasMany(Polygon::class);
+    }
+
 
     // Users that belong to a leader
 // Leader (User) has many team members

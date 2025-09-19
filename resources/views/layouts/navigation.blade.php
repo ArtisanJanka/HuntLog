@@ -7,7 +7,7 @@
         <div class="flex justify-between h-16 items-center">
             <!-- Logo -->
             <div class="flex items-center">
-                <a href="{{ route('home') }}" 
+                <a href="{{ route('dashboard') }}" 
                    class="font-bold text-lg tracking-wider text-emerald-400 hover:text-emerald-500 transition-colors duration-300">
                     HuntLog
                 </a>
@@ -15,7 +15,7 @@
 
             <!-- Desktop Menu -->
             <div class="hidden sm:flex sm:items-center sm:space-x-8">
-                <x-nav-link :href="route('join')" :active="request()->routeIs('join')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Pieteikties</x-nav-link>
+                
                 <x-nav-link :href="route('about')" :active="request()->routeIs('about')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Par mums</x-nav-link>
                 <x-nav-link :href="route('gallery')" :active="request()->routeIs('gallery')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Gallerija</x-nav-link>
                 <x-nav-link :href="route('contacts')" :active="request()->routeIs('contacts')" class="uppercase font-semibold text-gray-200 hover:text-emerald-500">Kontakti</x-nav-link>
@@ -74,7 +74,7 @@
     <!-- Mobile Menu -->
     <div :class="open ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'" class="sm:hidden overflow-hidden transition-all duration-500 bg-gray-900 shadow-md">
         <div class="px-4 pt-4 pb-6 space-y-3">
-            <x-responsive-nav-link :href="route('join')" class="text-gray-200 hover:text-emerald-400">Pieteikties</x-responsive-nav-link>
+            
             <x-responsive-nav-link :href="route('about')" class="text-gray-200 hover:text-emerald-400">Par mums</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('gallery')" class="text-gray-200 hover:text-emerald-400">Gallerija</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('contacts')" class="text-gray-200 hover:text-emerald-400">Kontakti</x-responsive-nav-link>

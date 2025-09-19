@@ -25,28 +25,7 @@
                 </form>
             </div>
 
-            <div class="bg-gray-800 rounded shadow-md overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-2 text-white">Name</th>
-                            <th class="px-4 py-2 text-white">Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($users as $user)
-                            <tr>
-                                <td class="px-4 py-2 text-gray-200">{{ $user->name }}</td>
-                                <td class="px-4 py-2 text-gray-200">{{ $user->email }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="2" class="px-4 py-2 text-gray-400 text-center">No users yet</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            
         </div>
 
         <div x-show="tab === 'requests'" class="space-y-4">
