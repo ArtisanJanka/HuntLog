@@ -1,4 +1,4 @@
-<!-- resources/views/contacts.blade.php -->
+
 <x-app-layout>
     <div class="py-16 bg-gray-900 min-h-screen">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-12">
