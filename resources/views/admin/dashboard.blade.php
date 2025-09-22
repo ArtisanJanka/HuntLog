@@ -1,45 +1,45 @@
 <x-app-layout>
-    <div class="min-h-screen bg-gray-900 text-gray-200 px-6 py-10">
+    <div class="min-h-screen bg-gray-900 text-gray-200 px-6 py-10 animate-fade-up">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold text-emerald-400 mb-2">Admin Dashboard</h1>
+            <p class="text-gray-400 text-lg">Welcome, {{ Auth::user()->name }}! Manage the system here.</p>
+        </header>
 
-        <h1 class="text-3xl font-bold mb-6 text-emerald-400">Admin Dashboard</h1>
-        <p class="mb-8">Welcome, {{ Auth::user()->name }}! Manage the system here.</p>
-
-        <!-- Stats -->
+        <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold text-gray-200 mb-2">Gallery Items</h2>
-                <p class="text-gray-400">Total: {{ $galleryCount }}</p>
-                <a href="{{ route('admin.gallery.index') }}" class="text-emerald-400 hover:text-emerald-500 underline">Manage Gallery</a>
-            </div>
+            @php
+                $cards = [
+                    ['title'=>'Gallery Items','count'=>$galleryCount,'link'=>route('admin.gallery.index')],
+                    ['title'=>'Hunting Types','count'=>$huntingTypeCount,'link'=>route('admin.hunting-types.index')],
+                    ['title'=>'Messages','count'=>$messageCount,'link'=>route('admin.messages.index')],
+                ];
+            @endphp
 
-            <div class="bg-gray-800 p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold text-gray-200 mb-2">Hunting Types</h2>
-                <p class="text-gray-400">Total: {{ $huntingTypeCount }}</p>
-                <a href="{{ route('admin.hunting-types.index') }}" class="text-emerald-400 hover:text-emerald-500 underline">Manage Types</a>
+            @foreach($cards as $card)
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/50">
+                <div class="h-1 w-full rounded-t bg-gradient-to-r from-emerald-400 to-emerald-600 mb-4"></div>
+                <h2 class="text-xl font-semibold text-gray-200 mb-2">{{ $card['title'] }}</h2>
+                <p class="text-gray-400 mb-4">Total: {{ $card['count'] }}</p>
+                <a href="{{ $card['link'] }}" class="text-emerald-400 hover:text-emerald-500 underline transition duration-200">Manage</a>
             </div>
-
-            <div class="bg-gray-800 p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold text-gray-200 mb-2">Messages</h2>
-                <p class="text-gray-400">Total: {{ $messageCount }}</p>
-                <a href="{{ route('admin.messages.index') }}" class="text-emerald-400 hover:text-emerald-500 underline">View All Messages</a>
-            </div>
+            @endforeach
         </div>
 
-        <!-- Users -->
-        <div class="bg-gray-800 rounded shadow-md overflow-hidden mb-10">
-            <h2 class="text-xl font-semibold p-4 border-b border-gray-700">All Users</h2>
+        <!-- Users Table -->
+        <div class="bg-gray-800 rounded-2xl shadow-md overflow-hidden mb-10 transform transition duration-500 hover:shadow-2xl hover:shadow-emerald-500/30">
+            <h2 class="text-xl font-semibold text-gray-200 p-4 border-b border-gray-700">All Users</h2>
             <table class="w-full text-left">
                 <thead class="bg-gray-700">
                     <tr>
-                        <th class="px-4 py-2 text-gray-200">Name</th>
-                        <th class="px-4 py-2 text-gray-200">Email</th>
-                        <th class="px-4 py-2 text-gray-200">Role</th>
-                        <th class="px-4 py-2 text-gray-200">Actions</th>
+                        <th class="px-4 py-2 text-white">Name</th>
+                        <th class="px-4 py-2 text-white">Email</th>
+                        <th class="px-4 py-2 text-white">Role</th>
+                        <th class="px-4 py-2 text-white">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($users as $user)
-                    <tr class="border-b border-gray-700">
+                    <tr class="border-b border-gray-700 animate-fade-up hover:bg-gray-700 transition">
                         <td class="px-4 py-2 text-gray-200">{{ $user->name }}</td>
                         <td class="px-4 py-2 text-gray-200">{{ $user->email }}</td>
                         <td class="px-4 py-2 text-gray-200">
@@ -49,12 +49,16 @@
                             @if(!$user->is_leader)
                             <form action="{{ route('admin.users.makeLeader', $user) }}" method="POST">
                                 @csrf
-                                <button class="px-2 py-1 bg-emerald-400 text-gray-900 rounded hover:bg-emerald-500">Make Leader</button>
+                                <button class="px-3 py-1 bg-emerald-400 text-gray-900 rounded-full hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-500/50 transition duration-300">
+                                    Make Leader
+                                </button>
                             </form>
                             @else
                             <form action="{{ route('admin.users.removeLeader', $user) }}" method="POST">
                                 @csrf
-                                <button class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">Remove Leader</button>
+                                <button class="px-3 py-1 bg-red-500 text-gray-900 rounded-full hover:bg-red-600 hover:shadow-lg hover:shadow-red-500/50 transition duration-300">
+                                    Remove Leader
+                                </button>
                             </form>
                             @endif
                         </td>
@@ -65,20 +69,20 @@
         </div>
 
         <!-- Recent Messages -->
-        <div class="bg-gray-800 rounded shadow-md overflow-hidden">
-            <h2 class="text-xl font-semibold p-4 border-b border-gray-700">Recent Messages</h2>
+        <div class="bg-gray-800 rounded-2xl shadow-md overflow-hidden transform transition duration-500 hover:shadow-2xl hover:shadow-emerald-500/30">
+            <h2 class="text-xl font-semibold text-gray-200 p-4 border-b border-gray-700">Recent Messages</h2>
             <table class="w-full text-left">
                 <thead class="bg-gray-700">
                     <tr>
-                        <th class="px-4 py-2 text-gray-200">Name</th>
-                        <th class="px-4 py-2 text-gray-200">Email</th>
-                        <th class="px-4 py-2 text-gray-200">Message</th>
-                        <th class="px-4 py-2 text-gray-200">Date</th>
+                        <th class="px-4 py-2 text-white">Name</th>
+                        <th class="px-4 py-2 text-white">Email</th>
+                        <th class="px-4 py-2 text-white">Message</th>
+                        <th class="px-4 py-2 text-white">Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($messages as $msg)
-                    <tr class="border-b border-gray-700">
+                    <tr class="border-b border-gray-700 animate-fade-up hover:bg-gray-700 transition">
                         <td class="px-4 py-2 text-gray-200">{{ $msg->name }}</td>
                         <td class="px-4 py-2 text-gray-200">{{ $msg->email }}</td>
                         <td class="px-4 py-2 text-gray-200">{{ Str::limit($msg->message, 50) }}</td>
@@ -92,6 +96,16 @@
                 </tbody>
             </table>
         </div>
-
     </div>
+
+    {{-- Add animation CSS --}}
+    <style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+    </style>
 </x-app-layout>
