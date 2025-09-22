@@ -1,57 +1,63 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto p-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Medību karte</h1>
+    <section class="bg-gray-900 min-h-screen py-6">
+        <div class="max-w-7xl mx-auto px-6">
 
-        {{-- Map Container --}}
-        <div id="map" class="w-full h-[600px] rounded-lg shadow-lg mb-6"></div>
+            <h1 class="text-3xl font-bold text-white mb-6">Medību karte</h1>
 
-        {{-- Waypoint Form --}}
-        <form id="waypointForm" method="POST" action="{{ route('waypoints.store') }}" class="mt-4 space-y-4">
-            @csrf
-            <input type="hidden" name="latitude" id="latitude">
-            <input type="hidden" name="longitude" id="longitude">
+            {{-- Map Container --}}
+            <div id="map" class="w-full h-[600px] rounded-lg shadow-lg mb-6"></div>
 
-            <div>
-                <label class="block text-gray-700 font-semibold">Nosaukums</label>
-                <input type="text" name="name" class="w-full bg-gray-100 text-gray-900 rounded p-2 border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500" required>
-            </div>
+            {{-- Waypoint Form --}}
+            <form id="waypointForm" method="POST" action="{{ route('waypoints.store') }}" class="mt-4 space-y-4">
+                @csrf
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
 
-            <div>
-                <label class="block text-gray-700 font-semibold">Apraksts (nav obligāts)</label>
-                <textarea name="description" class="w-full bg-gray-100 text-gray-900 rounded p-2 border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500"></textarea>
-            </div>
+                <div>
+                    <label class="block text-white font-semibold">Nosaukums</label>
+                    <input type="text" name="name"
+                        class="w-full bg-gray-800 text-white rounded p-2 border border-gray-700 focus:ring-emerald-500 focus:border-emerald-500"
+                        required>
+                </div>
 
-            <button class="px-4 py-2 bg-emerald-600 rounded text-white hover:bg-emerald-700">
-                Saglabāt punktu
-            </button>
-        </form>
+                <div>
+                    <label class="block text-white font-semibold">Apraksts (nav obligāts)</label>
+                    <textarea name="description"
+                        class="w-full bg-gray-800 text-white rounded p-2 border border-gray-700 focus:ring-emerald-500 focus:border-emerald-500"></textarea>
+                </div>
 
-        {{-- Polygon Save Form --}}
-        <form id="polygonForm" method="POST" action="{{ route('polygons.store') }}" class="mt-6 space-y-4">
-            @csrf
-            <input type="hidden" name="coordinates" id="polygonCoordinates">
+                <button class="px-4 py-2 bg-emerald-600 rounded text-white hover:bg-emerald-700">
+                    Saglabāt punktu
+                </button>
+            </form>
 
-            <div>
-                <label class="block text-gray-700 font-semibold">Polygon Name</label>
-                <input type="text" name="name" class="w-full bg-gray-100 text-gray-900 rounded p-2 border border-gray-300 focus:ring-emerald-500 focus:border-emerald-500" required>
-            </div>
+            {{-- Polygon Save Form --}}
+            <form id="polygonForm" method="POST" action="{{ route('polygons.store') }}" class="mt-6 space-y-4">
+                @csrf
+                <input type="hidden" name="coordinates" id="polygonCoordinates">
 
-            <button type="submit" class="px-4 py-2 bg-emerald-600 rounded text-white hover:bg-emerald-700">
-                Save Polygon
-            </button>
-        </form>
-    
-        {{-- Existing Waypoints --}}
-        
-        <ul class="space-y-2">
-            @foreach($waypoints as $waypoint)
-                <li class="bg-gray-200 text-gray-900 p-3 rounded">
-                    <span>{{ $waypoint->name }} ({{ $waypoint->latitude }}, {{ $waypoint->longitude }})</span>
-                    {{-- View link removed --}}
-                </li>
-            @endforeach
-        </ul>
-    </div>
+                <div>
+                    <label class="block text-white font-semibold">Polygon Name</label>
+                    <input type="text" name="name"
+                        class="w-full bg-gray-800 text-white rounded p-2 border border-gray-700 focus:ring-emerald-500 focus:border-emerald-500"
+                        required>
+                </div>
+
+                <button type="submit" class="px-4 py-2 bg-emerald-600 rounded text-white hover:bg-emerald-700">
+                    Save Polygon
+                </button>
+            </form>
+
+            {{-- Existing Waypoints --}}
+            <ul class="space-y-2 mt-6">
+                @foreach($waypoints as $waypoint)
+                    <li class="bg-gray-800 text-white p-3 rounded">
+                        <span>{{ $waypoint->name }} ({{ $waypoint->latitude }}, {{ $waypoint->longitude }})</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </section>
 
     {{-- Google Maps API with Drawing Library --}}
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1AR6ByWMwhdq_M4Xv3-nJXh4GBecWdlA&libraries=drawing&v=weekly&map_ids=8c002f2c7af3d5392f4d5e45" async defer></script>
