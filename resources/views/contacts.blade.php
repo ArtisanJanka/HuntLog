@@ -1,10 +1,17 @@
-
 <x-app-layout>
-    <div class="py-16 bg-gray-900 min-h-screen">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-12">
-            <div class="bg-gray-800 shadow-xl sm:rounded-2xl p-10 text-center">
+    <div class="relative py-16 min-h-screen bg-gray-900">
+
+        {{-- Background image --}}
+        <div class="absolute inset-0">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/94/Eurasian_brown_bear_%28Ursus_arctos_arctos%29_female_1.jpg" alt="Background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gray-900 bg-opacity-70"></div> {{-- dark overlay --}}
+        </div>
+
+        <div class="relative max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-12 z-10">
+
+            <div class="bg-gray-800 bg-opacity-90 shadow-xl sm:rounded-2xl p-10 text-center">
                 <h1 class="text-4xl font-extrabold text-emerald-400 mb-6">Get in Touch</h1>
-                <p class="text-gray-400 mb-8">Reach out to us directly or send us a message using the form below.</p>
+                <p class="text-gray-300 mb-8">Reach out to us directly or send us a message using the form below.</p>
 
                 <div class="flex flex-col sm:flex-row justify-center gap-10 text-gray-300">
                     <p class="flex items-center space-x-3">
@@ -27,7 +34,7 @@
                 </div>
             </div>
 
-            <div class="bg-gray-800 shadow-xl sm:rounded-2xl p-10">
+            <div class="bg-gray-800 bg-opacity-90 shadow-xl sm:rounded-2xl p-10">
                 <h2 class="text-2xl font-bold text-emerald-400 mb-6 text-center">Send us a Message</h2>
 
                 @if(session('success'))
