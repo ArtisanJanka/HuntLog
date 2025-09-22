@@ -17,13 +17,10 @@ return new class extends Migration
     $table->text('coordinates'); // JSON of coordinates
     $table->foreignId('user_id')->constrained()->onDelete('cascade');
     $table->timestamps();
-
-
 });
 
 
     }
-
     /**
      * Reverse the migrations.
      */
@@ -31,7 +28,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('polygons');
     }
-
-
-
 };
