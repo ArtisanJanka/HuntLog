@@ -46,11 +46,11 @@ class User extends Authenticatable
     ];
 
     public function waypoints()
-{
-    return $this->hasMany(Waypoint::class);
-}
+    {
+        return $this->hasMany(Waypoint::class);
+    }
 
-public function polygons()
+    public function polygons()
     {
         return $this->hasMany(Polygon::class);
     }
@@ -58,19 +58,15 @@ public function polygons()
 
     // Users that belong to a leader
 // Leader (User) has many team members
-public function team()
-{
-    return $this->hasMany(User::class, 'leader_id');
-}
+    public function team()
+    {
+        return $this->hasMany(User::class, 'leader_id');
+    }
 
 
 // If you want, a user belongs to a leader
-public function leader()
-{
-    return $this->belongsTo(User::class, 'leader_id');
-}
-
-
-
-
+    public function leader()
+    {
+        return $this->belongsTo(User::class, 'leader_id');
+    }
 }

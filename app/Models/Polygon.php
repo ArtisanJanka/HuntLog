@@ -9,11 +9,6 @@ class Polygon extends Model
 {
     protected $fillable = ['name', 'coordinates', 'user_id'];
 
-    
-
-
-
-
     public function user()
     {
         return $this->belongsTo(User::class);

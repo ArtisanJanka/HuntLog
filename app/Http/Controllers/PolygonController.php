@@ -40,16 +40,17 @@ class PolygonController extends Controller
         return view('maps.polygon', compact('polygon'));
     }
     public function userPolygons()
-{
-    $polygons = Polygon::where('user_id', Auth::id())->get(); // only their polygons
-    return view('maps.index', compact('polygons'));
-}
+    {
+
+        $polygons = Polygon::where('user_id', Auth::id())->get(); // only their polygons
+        return view('maps.index', compact('polygons'));
+    }
 
     public function edit(Request $request)
-{
-    $user = $request->user();
-    $polygons = $user->polygons()->get(); // assuming Polygon has user_id
-    return view('profile.edit', compact('user', 'polygons'));
-}
+    {
+        $user = $request->user();
+        $polygons = $user->polygons()->get(); // assuming Polygon has user_id
+        return view('profile.edit', compact('user', 'polygons'));
+    }
 
 }

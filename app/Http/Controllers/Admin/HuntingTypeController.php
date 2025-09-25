@@ -13,7 +13,6 @@ class HuntingTypeController extends Controller
         $types = HuntingType::latest()->get();
         return view('admin.hunting-types.index', compact('types'));
     }
-
     public function create()
     {
         return view('admin.hunting-types.create');
@@ -31,13 +30,13 @@ class HuntingTypeController extends Controller
     }
 
     public function edit(HuntingType $huntingType)
-{
+    {
     // Pass as 'type' to match your view
     return view('admin.hunting-types.edit', ['type' => $huntingType]);
-}
+    }
 
-public function update(Request $request, HuntingType $huntingType)
-{
+    public function update(Request $request, HuntingType $huntingType)
+    {
     $request->validate([
         'name' => 'required|string|max:255|unique:hunting_types,name,' . $huntingType->id,
     ]);
@@ -45,7 +44,7 @@ public function update(Request $request, HuntingType $huntingType)
     $huntingType->update(['name' => $request->name]);
 
     return redirect()->route('admin.hunting-types.index')->with('success', 'Hunting type updated!');
-}
+    }
 
 
     public function destroy(HuntingType $huntingType)

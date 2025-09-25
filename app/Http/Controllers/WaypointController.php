@@ -58,7 +58,7 @@ class WaypointController extends Controller
         ]);
     }
     public function storePolygon(Request $request)
-{
+    {
     $request->validate([
         'name' => 'required|string|max:255',
         'coordinates' => 'required|string',
@@ -71,6 +71,5 @@ class WaypointController extends Controller
     ]);
 
     return redirect()->back()->with('success', 'Polygon saved!');
-}
-
+    }
 }

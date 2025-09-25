@@ -1,5 +1,3 @@
-{{-- resources/views/join.blade.php --}}
-
 <x-app-layout>
     <div class="bg-gray-900 min-h-screen py-16">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">

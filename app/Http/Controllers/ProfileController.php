@@ -9,14 +9,14 @@ class ProfileController extends Controller
 {
     // Show profile edit page
     public function edit(Request $request)
-{
+    {
     $user = $request->user();
 
     // Get all polygons for the logged-in user
     $polygons = $user->polygons()->get();
 
     return view('profile.edit', compact('user', 'polygons'));
-}
+    }
 
 
     // Update profile

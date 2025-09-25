@@ -29,9 +29,9 @@ class GalleryItem extends Model
      * Return full URL for the image (for <img src>).
      */
     public function url()
-{
+    {
     return asset('storage/' . $this->image_path);
-}
+    }
 
 
     /**

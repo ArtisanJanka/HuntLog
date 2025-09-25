@@ -17,7 +17,6 @@ class ContactController extends Controller
         ]);
 
         Contact::create($data);
-
         return redirect()->back()->with('success', 'Message sent successfully!');
     }
 
