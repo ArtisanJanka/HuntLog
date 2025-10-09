@@ -198,7 +198,6 @@
             nameAsc = !nameAsc;
         });
 
-        // Modal
         const modal = document.getElementById('msg-modal');
         const mName = document.getElementById('m-name');
         const mEmail= document.getElementById('m-email');
@@ -227,7 +226,7 @@
             }
         });
 
-        // Copy email (table + modal)
+
         const toastRoot = document.getElementById('toast-root');
         function toast(msg){
             const div = document.createElement('div');
@@ -253,7 +252,7 @@
 
     {{-- Styles --}}
     <style>
-    /* Fog / Smoke */
+
     .fog {
         position:absolute; width:40vw; height:40vw; min-width:360px; min-height:360px;
         background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 60%);
@@ -265,11 +264,11 @@
     .fog-3{ top:40%; right:20%; animation-duration:38s; opacity:.18; }
     @keyframes fogDrift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-40px) scale(1.12)} 100%{transform:translate(0,0) scale(1)} }
 
-    /* Reveal */
+
     [data-reveal-group] .reveal { opacity:0; transform: translateY(14px) scale(.98); transition: opacity .6s ease, transform .6s ease; }
     [data-reveal-group] .reveal.show { opacity:1; transform: none; }
 
-    /* Buttons */
+
     .btn-ghost{
         display:inline-flex; align-items:center; gap:.5rem;
         padding:.5rem .9rem; border-radius:.7rem;
@@ -292,7 +291,6 @@
     }
     .btn-icon:hover{ color:#34d399; border-color: rgba(16,185,129,.5); background: rgba(255,255,255,.12); }
 
-    /* Badges */
     .badge{
         display:inline-flex; align-items:center; gap:.4rem; font-size:.75rem; font-weight:700;
         padding:.25rem .5rem; border-radius:.5rem; border:1px solid;

@@ -10,27 +10,18 @@ use Illuminate\Support\Facades\Storage;
 
 class GalleryItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $galleryItems = GalleryItem::with('huntingType')->latest()->get();
         return view('admin.gallery.index', compact('galleryItems'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $huntingTypes = HuntingType::all(); // consistent naming
+        $huntingTypes = HuntingType::all();
         return view('admin.gallery.create', compact('huntingTypes'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -47,18 +38,12 @@ class GalleryItemController extends Controller
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery item created successfully!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(GalleryItem $galleryItem)
     {
         $huntingTypes = HuntingType::all();
         return view('admin.gallery.edit', compact('galleryItem', 'huntingTypes'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, GalleryItem $galleryItem)
     {
         $data = $request->validate([
@@ -80,9 +65,7 @@ class GalleryItemController extends Controller
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery item updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(GalleryItem $galleryItem)
     {
         if ($galleryItem->image_path && Storage::disk('public')->exists($galleryItem->image_path)) {

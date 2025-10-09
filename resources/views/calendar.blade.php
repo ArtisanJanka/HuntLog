@@ -1,308 +1,316 @@
 <x-app-layout>
     @php
-        $months = range(1, 12);
         $monthNames = ['Janvāris','Februāris','Marts','Aprīlis','Maijs','Jūnijs','Jūlijs','Augusts','Septembris','Oktobris','Novembris','Decembris'];
-
-        $animals = [
-            ['name'=>'Sarkanais briedis','type'=>'brieži','months'=>[8,9,10,11,12,1]],
-            ['name'=>'Staltbrieži','type'=>'brieži','months'=>[6,7,8,9,10,11]],
-            ['name'=>'Alnis','type'=>'brieži','months'=>[9,10,11,12]],
-            ['name'=>'Mežacūka','type'=>'brieži','months'=>range(1,12)],
-            ['name'=>'Lūsis','type'=>'plēsēji','months'=>[]],
-            ['name'=>'Brūnais lācis','type'=>'plēsēji','months'=>[8,9,10]],
-            ['name'=>'Ūdensputni','type'=>'putni','months'=>[8,9,10,11,12,1]],
-        ];
-
-        $colors = [
-            'brieži'  => 'bg-emerald-600',
-            'plēsēji' => 'bg-amber-600',
-            'putni'   => 'bg-sky-600',
-        ];
-
-        $icons = [
-            'default' => '🦌',
-            'boar'    => '🐗',
-            'bear'    => '🐻',
-            'duck'    => '🦆',
-        ];
-
-        $currentMonthIndex = (int)date('n') - 1;
         $currentDay   = (int)date('j');
         $currentMonth = (int)date('n');
         $currentYear  = (int)date('Y');
+
+        // Prepare a safe, minimal events array for JS (include as many useful fields as exist)
+        $safeEvents = collect($events ?? [])->map(function ($e) {
+            return [
+                'id'           => $e->id,
+                'group_id'     => $e->group_id ?? null,
+                'group'        => optional($e->group)->name ?? null,
+                'title'        => $e->title ?? 'Notikums',
+                'start_at'     => optional($e->start_at)->format('Y-m-d') ?? null,
+                'end_at'       => optional($e->end_at)->format('Y-m-d') ?? null,
+                'start_time'   => optional($e->start_at)->format('H:i') ?? null,
+                'end_time'     => optional($e->end_at)->format('H:i') ?? null,
+                'polygon'      => optional($e->polygon)->name ?? null,
+                'polygon_url'  => $e->polygon ? route('polygons.show', $e->polygon) : null,
+                'meetup_place' => $e->meetup_place ?? null,
+                'details'      => $e->details ?? ($e->description ?? null),
+                // If you have creator relation on the model:
+                'creator'      => optional($e->creator ?? null)->name ?? null,
+                // If group has hunting type:
+                'type'         => optional(optional($e->group)->huntingType)->name ?? null,
+            ];
+        })->values();
     @endphp
 
     <style>
-        /* 1) Neutralize layout backgrounds on this page only */
         html, body, .min-h-screen, main { background: transparent !important; }
-
-        /* 2) Make the calendar container own the stacking and paint its bg above page bg */
         .hunt-bg { position: relative; z-index: 0; }
-        .hunt-bg > .hunt-content { position: relative; z-index: 2; } /* content above the background layers */
-
-        /* Background image + vignette (NO filter) */
+        .hunt-bg > .hunt-content { position: relative; z-index: 2; }
         .hunt-bg::before {
-            content:"";
-            position: fixed; inset: 0;
-            z-index: 1; /* above the page bg, below .hunt-content */
+            content:""; position: fixed; inset: 0; z-index: 1;
             background:
               linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.78)),
-              url('https://images.squarespace-cdn.com/content/v1/5ddd707034a3a5066151f221/d90be072-e7ed-47e7-8828-91c87f49e9df/laura-college-K_Na5gCmh38-unsplash.jpg')
-                center/cover no-repeat;
+              url('https://images.squarespace-cdn.com/content/v1/5ddd707034a3a5066151f221/d90be072-e7ed-47e7-8828-91c87f49e9df/laura-college-K_Na5gCmh38-unsplash.jpg') center/cover no-repeat;
             pointer-events: none;
         }
         .hunt-bg::after {
-            content:"";
-            position: fixed; inset: 0;
-            z-index: 1;
+            content:""; position: fixed; inset: 0; z-index: 1;
             background:
               radial-gradient(1400px 620px at 50% 110%, rgba(16,185,129,.12), transparent 70%),
               radial-gradient(1200px 600px at 20% 10%, rgba(255,255,255,.05), transparent 60%);
             pointer-events: none;
         }
+        .wild-art { position: fixed; right: -4%; bottom: -2%; width: 40vw; max-width: 640px; min-width: 260px; opacity: .12; filter: grayscale(1) contrast(1.05); z-index: 1; pointer-events: none; user-select: none; }
 
-        /* Optional decorative silhouette (kept subtle) */
-        .wild-art {
-            position: fixed; right: -4%; bottom: -2%;
-            width: 40vw; max-width: 640px; min-width: 260px;
-            opacity: .12; filter: grayscale(1) contrast(1.05);
-            z-index: 1; pointer-events: none; user-select: none;
-        }
-
-        /* Reveal animation */
         @keyframes fadeUp { from {opacity:0; transform:translateY(12px)} to {opacity:1; transform:none} }
         .reveal { opacity:0; transform:translateY(12px); }
         .reveal.show { animation: fadeUp .6s ease forwards; }
 
-        /* Month chips */
         .month-chip { transition: all .2s ease; }
         .month-chip.active { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.5); color:#d1fae5; }
 
-        /* Day cell */
         .day-cell { transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease; }
         .day-cell:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,.35); }
         .today-ring { box-shadow: 0 0 0 2px rgba(16,185,129,.8) inset, 0 0 0 1px rgba(16,185,129,.35); }
         .weekend { background-image: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); }
 
-        /* Legend dots */
-        .dot { width:.6rem; height:.6rem; border-radius:9999px; display:inline-block; }
-
-        /* Tooltip (pure CSS) */
-        .tip { position: relative; }
-        .tip .tip-box {
-            position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-            background: rgba(17,24,39,.92); color: #e5e7eb; border: 1px solid rgba(255,255,255,.08);
-            padding: .45rem .6rem; border-radius: .5rem; white-space: nowrap;
-            font-size: .75rem; line-height: 1rem; opacity: 0; pointer-events: none;
-            transition: opacity .15s ease, transform .15s ease;
-        }
-        .tip .tip-box::after {
-            content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            border: 6px solid transparent; border-top-color: rgba(17,24,39,.92);
-        }
-        .tip:hover .tip-box { opacity: 1; transform: translate(-50%, -2px); }
-
         .no-scrollbar { scrollbar-width: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        @media (prefers-reduced-motion: reduce) {
-            .reveal.show { animation: none !important; opacity:1 !important; transform:none !important; }
+        /* Icon button reused */
+        .btn-icon{
+          display:inline-flex; align-items:center; justify-content:center;
+          width:34px; height:34px; border-radius:.6rem;
+          background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+          color:#e5e7eb; transition: all .2s ease;
         }
+        .btn-icon:hover{ color:#34d399; border-color: rgba(16,185,129,.5); background: rgba(255,255,255,.12); }
+
+        .chip { display:inline-flex; align-items:center; gap:.4rem; padding:.2rem .5rem; border-radius:.5rem; font-size:.75rem; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.08); color:#e5e7eb; }
     </style>
 
-    <div 
-        x-data="huntCalendar({ initial: {{ $currentMonthIndex }} })"
-        x-init="init()"
-        @keydown.window.left.prevent="prev()"
-        @keydown.window.right.prevent="next()"
+    <div
         class="hunt-bg relative w-full min-h-screen text-gray-100 overflow-hidden"
+        x-data="huntCalendar({
+            initialYear: {{ $currentYear }},
+            initialMonth: {{ $currentMonth }},
+            initialDay: {{ $currentDay }},
+            monthNames: @js($monthNames),
+            events: @js($safeEvents)
+        })"
+        x-init="initComponent()"
     >
-        {{-- Optional silhouette --}}
         <img class="wild-art" alt="Sarkanais briedis" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Red_deer_stag_2019.jpg" />
 
-        <div class="hunt-content max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-            {{-- Header / Controls --}}
+        <div class="hunt-content max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10" data-reveal-group>
+            <!-- Header -->
             <div class="reveal flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-black tracking-tight">Medību kalendārs</h1>
-                    <p class="text-gray-300 mt-1">Pārslēdz mēnešus, skaties ieteicamos dzīvniekus pēc sezonas.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button @click="today()" class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition">
-                        Šodien
-                    </button>
+                    <button @click="today()" class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition">Šodien</button>
                     <div class="flex gap-2">
-                        <button @click="prev()" class="h-10 w-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center hover:bg-white/15 transition" aria-label="Iepriekšējais">
-                            ‹
-                        </button>
-                        <button @click="next()" class="h-10 w-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center hover:bg-white/15 transition" aria-label="Nākamais">
-                            ›
-                        </button>
+                        <button @click="prev()" class="h-10 w-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center hover:bg-white/15 transition" aria-label="Iepriekšējais">‹</button>
+                        <button @click="next()" class="h-10 w-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center hover:bg-white/15 transition" aria-label="Nākamais">›</button>
                     </div>
                 </div>
             </div>
 
-            {{-- Month chips --}}
+            <!-- Month chips -->
             <div class="reveal mt-5">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-lg font-semibold" x-text="viewYear"></div>
+                </div>
                 <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 -mx-1 px-1">
-                    @foreach($months as $index => $month)
+                    <template x-for="(m, idx) in monthNames" :key="idx">
                         <button
-                            @click="monthIndex={{ $index }}"
-                            :class="monthIndex === {{ $index }} ? 'active' : ''"
                             class="month-chip whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10"
-                        >
-                            {{ $monthNames[$index] }}
-                        </button>
-                    @endforeach
+                            :class="idx+1 === viewMonth ? 'active' : ''"
+                            @click="setMonth(idx+1)"
+                            x-text="m"
+                        ></button>
+                    </template>
                 </div>
             </div>
 
-            {{-- Swipe area --}}
-            <div 
-                class="mt-6 sm:mt-8"
-                x-on:touchstart.passive="touchStart($event)"
-                x-on:touchend.passive="touchEnd($event)"
-            >
-                {{-- Month sections --}}
-                @foreach($months as $index => $month)
-                    @php
-                        $year = $currentYear;
-                        $daysInMonth  = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-                        $firstWeekday = (int)date('N', strtotime("$year-$month-01")); // 1..7 (Mon..Sun)
-                        $leading = $firstWeekday - 1;
-                    @endphp
+            <!-- Calendar -->
+            <div class="mt-6 sm:mt-8">
+                <section class="reveal w-full">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-2xl sm:text-3xl font-bold" x-text="monthNames[viewMonth-1] + ' ' + viewYear"></h2>
+                    </div>
 
-                    <section
-                        x-show="monthIndex === {{ $index }}"
-                        x-transition
-                        class="reveal w-full"
-                    >
-                        <div class="flex items-center justify-between mb-3">
-                            <h2 class="text-2xl sm:text-3xl font-bold">
-                                {{ $monthNames[$index] }} {{ $year }}
-                            </h2>
-                            <div class="hidden sm:flex items-center gap-4 text-sm">
-                                <span><span class="dot bg-emerald-600"></span> Brieži</span>
-                                <span><span class="dot bg-amber-600"></span> Plēsēji</span>
-                                <span><span class="dot bg-sky-600"></span> Putni</span>
-                            </div>
+                    <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl p-3 sm:p-4">
+                        <!-- Week headers (Mon..Sun) -->
+                        <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center font-semibold text-gray-300 mb-2">
+                            <div>P</div><div>O</div><div>T</div><div>C</div><div>P</div><div>S</div><div>S</div>
+                        </div>
+                        <!-- Days grid -->
+                        <div class="grid grid-cols-7 gap-1 sm:gap-2">
+                            <template x-for="cell in daysGrid()" :key="cell.key">
+                                <div
+                                    class="day-cell h-12 sm:h-16 md:h-20 rounded border border-white/10 flex items-center justify-center font-semibold text-sm sm:text-base cursor-pointer"
+                                    :class="{
+                                        'bg-white/[.03]': cell.inMonth && !cell.isWeekend,
+                                        'weekend bg-white/[.04]': cell.inMonth && cell.isWeekend,
+                                        'bg-transparent border-transparent': !cell.inMonth,
+                                        'today-ring bg-emerald-600/10': cell.isToday
+                                    }"
+                                    :title="cell.title"
+                                    x-text="cell.label"
+                                    @click="cell.inMonth && selectDate(cell.dateISO)"
+                                ></div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Selected day summary (full details) -->
+                    <div class="mt-5 rounded-xl border border-white/10 bg-black/40 p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="font-semibold" x-text="formatLong(selectedDate)"></div>
+                            <div class="text-sm text-gray-300" x-text="dayEvents(selectedDate).length + ' pasākumi'"></div>
                         </div>
 
-                        {{-- Calendar --}}
-                        <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl p-3 sm:p-4">
-                            {{-- Week headers --}}
-                            <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center font-semibold text-gray-300 mb-2">
-                                <div>P</div><div>O</div><div>T</div><div>C</div><div>P</div><div>S</div><div>S</div>
-                            </div>
+                        <div class="mt-3 space-y-3">
+                            <template x-if="dayEvents(selectedDate).length === 0">
+                                <div class="text-gray-300">Šajā dienā nav notikumu.</div>
+                            </template>
 
-                            {{-- Days grid --}}
-                            <div class="grid grid-cols-7 gap-1 sm:gap-2">
-                                {{-- Leading blanks --}}
-                                @for ($i = 0; $i < $leading; $i++)
-                                    <div class="h-12 sm:h-16 md:h-20 rounded bg-transparent"></div>
-                                @endfor
+                            <template x-for="ev in dayEvents(selectedDate)" :key="ev.id">
+                                <div class="rounded-xl border border-white/10 bg-black/30 p-3">
+                                    <!-- Header: title + quick chips + map btn -->
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="font-semibold truncate" x-text="ev.title"></div>
+                                            <div class="mt-1 flex flex-wrap items-center gap-2 text-xs">
+                                                <template x-if="ev.group">
+                                                    <span class="chip">Grupa: <strong x-text="ev.group"></strong></span>
+                                                </template>
+                                                <template x-if="ev.type">
+                                                    <span class="chip">Tips: <span x-text="ev.type"></span></span>
+                                                </template>
+                                                <template x-if="ev.creator">
+                                                    <span class="chip">Izveidoja: <span x-text="ev.creator"></span></span>
+                                                </template>
+                                            </div>
+                                        </div>
 
-                                {{-- Real days --}}
-                                @for($day = 1; $day <= $daysInMonth; $day++)
-                                    @php
-                                        $w = (int)date('N', strtotime("$year-$month-$day"));
-                                        $isWeekend = $w >= 6;
-                                        $isToday = ($year === $currentYear && $month === $currentMonth && $day === $currentDay);
-                                    @endphp
-                                    <div
-                                        class="day-cell h-12 sm:h-16 md:h-20 rounded border border-white/10 {{ $isWeekend ? 'weekend bg-white/[.04]' : 'bg-white/[.03]' }} {{ $isToday ? 'today-ring bg-emerald-600/10' : '' }} flex items-center justify-center font-semibold text-sm sm:text-base"
-                                        title="{{ $day }}. {{ $monthNames[$index] }} {{ $year }}"
-                                    >
-                                        {{ $day }}
+                                        <!-- Show on map -->
+                                        <a class="btn-icon" x-show="ev.polygon_url" :href="ev.polygon_url" title="Skatīt kartē">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M9 20l-5-2V6l5 2 6-2 5 2v12l-5-2-6 2z"/>
+                                            </svg>
+                                        </a>
                                     </div>
-                                @endfor
-                            </div>
+
+                                    <!-- When -->
+                                    <div class="mt-2 text-sm text-gray-300">
+                                        <span x-text="ev.start_at"></span>
+                                        <template x-if="ev.start_time">
+                                            <span> <span x-text="ev.start_time"></span></span>
+                                        </template>
+                                        <template x-if="ev.end_at || ev.end_time">
+                                            <span> — </span>
+                                        </template>
+                                        <template x-if="ev.end_at">
+                                            <span x-text="ev.end_at"></span>
+                                        </template>
+                                        <template x-if="ev.end_time">
+                                            <span> <span x-text="ev.end_time"></span></span>
+                                        </template>
+                                    </div>
+
+                                    <!-- Polygon name -->
+                                    <template x-if="ev.polygon">
+                                        <div class="mt-1 text-sm text-gray-300">
+                                            Poligons: <span class="font-medium" x-text="ev.polygon"></span>
+                                        </div>
+                                    </template>
+
+                                    <!-- Meetup -->
+                                    <template x-if="ev.meetup_place">
+                                        <div class="mt-1 text-sm text-gray-300">
+                                            Tikšanās vieta: <span class="font-medium" x-text="ev.meetup_place"></span>
+                                        </div>
+                                    </template>
+
+                                    <!-- Details / Notes -->
+                                    <template x-if="ev.details">
+                                        <div class="mt-2 text-sm text-gray-200 whitespace-pre-line leading-relaxed">
+                                            <span x-text="ev.details"></span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
                         </div>
-
-                        {{-- Animals --}}
-                        <div class="mt-5">
-                            <h3 class="font-semibold mb-2 text-lg">Medību dzīvnieki:</h3>
-                            <div class="flex flex-wrap gap-2 min-w-[250px]">
-                                @php $hasAnimals = false; @endphp
-                                @foreach($animals as $animal)
-                                    @php
-                                        $isOpen = in_array($month, $animal['months']);
-                                        $hasAnimals = $hasAnimals || $isOpen;
-
-                                        $seasonText = '';
-                                        if (!empty($animal['months'])) {
-                                            $names = array_map(fn($m) => $monthNames[$m-1], $animal['months']);
-                                            $seasonText = implode(', ', $names);
-                                        } else {
-                                            $seasonText = 'Tikai ar īpašām atļaujām';
-                                        }
-
-                                        $icon = $icons['default'];
-                                        if (str_contains($animal['name'], 'Mežacūka')) $icon = $icons['boar'];
-                                        elseif (str_contains($animal['name'], 'lācis') || str_contains($animal['name'], 'Lācis')) $icon = $icons['bear'];
-                                        elseif (str_contains($animal['name'], 'Ūdensputni')) $icon = $icons['duck'];
-                                    @endphp
-
-                                    @if($isOpen)
-                                        <span class="tip inline-flex items-center gap-2 px-3 py-1 text-sm rounded text-white shadow whitespace-nowrap border border-white/10 {{ $colors[$animal['type']] }} hover:brightness-110 transition">
-                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-black/20">{{ $icon }}</span>
-                                            <span>{{ $animal['name'] }}</span>
-                                            <span class="tip-box">{{ $seasonText }}</span>
-                                        </span>
-                                    @endif
-                                @endforeach
-
-                                @unless($hasAnimals)
-                                    <p class="text-gray-300/90 italic text-sm">Nav medību šajā mēnesī</p>
-                                @endunless
-                            </div>
-
-                            <p class="mt-3 text-xs text-gray-300/80">
-                                <strong>Lūsis</strong> – medības tikai ar atļaujām.
-                            </p>
-                        </div>
-                    </section>
-                @endforeach
-            </div>
-
-            {{-- Controls (bottom on mobile) --}}
-            <div class="reveal flex justify-between w-full mt-6">
-                <button
-                    @click="prev()"
-                    class="bg-white/10 hover:bg-white/15 text-white px-4 py-2 rounded-full shadow border border-white/10"
-                >
-                    ‹ Iepriekšējais
-                </button>
-                <button
-                    @click="next()"
-                    class="bg-white/10 hover:bg-white/15 text-white px-4 py-2 rounded-full shadow border border-white/10"
-                >
-                    Nākamais ›
-                </button>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
 
     <script>
-        function huntCalendar({ initial = 0 }) {
-            return {
-                monthIndex: initial,
-                init() {
-                    const reveals = document.querySelectorAll('.reveal');
-                    reveals.forEach((el, i) => setTimeout(() => el.classList.add('show'), 80 * i));
-                },
-                prev(){ this.monthIndex = (this.monthIndex + 11) % 12; },
-                next(){ this.monthIndex = (this.monthIndex + 1) % 12; },
-                today(){ this.monthIndex = {{ $currentMonthIndex }}; },
-                _ts: null,
-                touchStart(e){ this._ts = e.changedTouches[0].clientX; },
-                touchEnd(e){
-                    if (this._ts === null) return;
-                    const dx = e.changedTouches[0].clientX - this._ts;
-                    if (Math.abs(dx) > 40) { dx < 0 ? this.next() : this.prev(); }
-                    this._ts = null;
-                }
+      window.huntCalendar = function ({ initialYear, initialMonth, initialDay, monthNames, events }) {
+        return {
+          // State
+          viewYear: initialYear,
+          viewMonth: initialMonth,
+          todayY: initialYear,
+          todayM: initialMonth,
+          todayD: initialDay,
+          monthNames: monthNames || ['Janvāris','Februāris','Marts','Aprīlis','Maijs','Jūnijs','Jūlijs','Augusts','Septembris','Oktobris','Novembris','Decembris'],
+          events: Array.isArray(events) ? events : [],
+
+          // Initial selected date without Date/UTC conversions
+          selectedDate: `${initialYear}-${String(initialMonth).padStart(2,'0')}-${String(initialDay).padStart(2,'0')}`,
+
+          initComponent() {
+            document.querySelectorAll('[data-reveal-group]').forEach(group => {
+              const els = group.querySelectorAll('.reveal');
+              els.forEach((el, i) => setTimeout(() => el.classList.add('show'), 80 * i));
+            });
+          },
+
+          setMonth(m) { this.viewMonth = m; },
+          today()  {
+            this.viewYear = this.todayY;
+            this.viewMonth = this.todayM;
+            this.selectedDate = this.isoLocal(this.todayY, this.todayM, this.todayD);
+          },
+          prev()   { if (this.viewMonth === 1) { this.viewMonth = 12; this.viewYear -= 1; } else { this.viewMonth -= 1; } },
+          next()   { if (this.viewMonth === 12) { this.viewMonth = 1;  this.viewYear += 1; } else { this.viewMonth += 1; } },
+          selectDate(iso) { this.selectedDate = iso; },
+
+          // Local helpers (no timezone drifting)
+          isoLocal(y,m,d){ return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; },
+          daysInMonth(y, m){ return new Date(y, m, 0).getDate(); }, // m: 1..12
+          monFirstIndex(jsDay){ return ((jsDay + 6) % 7) + 1; },
+          isToday(y,m,d){ return y === this.todayY && m === this.todayM && d === this.todayD; },
+          isWeekend(y,m,d){ const js = new Date(y, m-1, d).getDay(); return js === 6 || js === 0; },
+
+          formatLong(iso){
+            if(!iso) return '';
+            const [yy,mm,dd] = iso.split('-').map(n => parseInt(n,10));
+            return `${dd}. ${this.monthNames[mm-1]} ${yy}`;
+          },
+
+          daysGrid(){
+            const y = this.viewYear, m = this.viewMonth;
+            const first = new Date(y, m-1, 1);
+            const leading = this.monFirstIndex(first.getDay()) - 1;
+            const dim = this.daysInMonth(y, m);
+
+            const cells = []; let key = 0;
+            for (let i=0;i<leading;i++) cells.push({ key: key++, inMonth:false, label:'', title:'', dateISO:null });
+            for (let d=1; d<=dim; d++) {
+              const weekend = this.isWeekend(y,m,d);
+              const iso = this.isoLocal(y,m,d);
+              cells.push({
+                key: key++, inMonth:true, label: String(d), dateISO: iso,
+                isWeekend: weekend, isToday: this.isToday(y,m,d),
+                title: `${d}. ${this.monthNames[m-1]} ${y}`
+              });
             }
+            const remainder = cells.length % 7;
+            if (remainder !== 0) {
+              for (let i=0;i<7-remainder;i++) cells.push({ key: key++, inMonth:false, label:'', title:'', dateISO:null });
+            }
+            return cells;
+          },
+
+          dayEvents(iso){
+            if(!iso) return [];
+            return this.events.filter(e => e.start_at === iso);
+          },
         }
+      }
     </script>
 </x-app-layout>

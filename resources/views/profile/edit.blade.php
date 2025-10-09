@@ -1,7 +1,23 @@
 <x-app-layout>
-    {{-- Background + fog --}}
+    {{-- Background + fog (VIDEO) --}}
     <section class="relative min-h-screen pt-20 sm:pt-24 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black"></div>
+        {{-- Video layer --}}
+        <video
+            class="absolute inset-0 w-full h-full object-cover"
+            src="{{ asset('storage/videos/fire.mp4') }}"
+            playsinline
+            muted
+            loop
+            autoplay
+            preload="metadata"
+            aria-hidden="true"
+            tabindex="-1"
+        ></video>
+
+        {{-- Cinematic tint --}}
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-gray-900/70 to-black/90"></div>
+
+        {{-- Fog --}}
         <div class="pointer-events-none absolute inset-0 overflow-hidden">
             <div class="fog fog-1"></div>
             <div class="fog fog-2"></div>
@@ -58,7 +74,7 @@
                 <div class="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-white">Jūsu poligoni</h2>
-                        <p class="text-gray-300 text-sm">Meklē, kopē koordinātas vai lejupielādē GeoJSON formātā.</p>
+                        <p class="text-gray-300 text-sm">Meklē, kopē koordinātas, skatīt kartē vai lejupielādē GeoJSON.</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="relative">
@@ -80,13 +96,13 @@
                     <ul id="poly-list" class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($polygons as $index => $polygon)
                             @php
-                                // mēģinām noteikt punktu skaitu (ja ir korekts JSON)
                                 $pts = 0;
                                 try {
                                     $arr = json_decode($polygon->coordinates, true);
                                     if (is_array($arr)) { $pts = count($arr); }
                                 } catch (\Throwable $e) {}
                             @endphp
+
                             <li class="reveal polygon-card group rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl p-5 text-gray-100"
                                 data-name="{{ strtolower($polygon->name) }}">
                                 <div class="flex items-start justify-between gap-3">
@@ -96,18 +112,40 @@
                                         </h3>
                                         <p class="mt-1 text-xs text-gray-400">Punkti: {{ $pts > 0 ? $pts : '—' }}</p>
                                     </div>
+
                                     <div class="flex items-center gap-2 shrink-0">
+                                        {{-- Show on Map (focus this polygon) --}}
+                                        <a href="{{ route('polygons.show', $polygon) }}" class="btn-icon" title="Skatīt kartē">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M9 20l-5-2V6l5 2 6-2 5 2v12l-5-2-6 2z"/>
+                                            </svg>
+                                        </a>
+
+                                        {{-- Copy coordinates --}}
                                         <button class="btn-icon copy-btn" title="Kopēt koordinātas"
                                                 data-coords='@json($polygon->coordinates)'>
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16h8a2 2 0 002-2V7a2 2 0 00-2-2h-4l-2-2H8a2 2 0 00-2 2v2"/></svg>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M8 16h8a2 2 0 002-2V7a2 2 0 00-2-2h-4l-2-2H8a2 2 0 00-2 2v2"/>
+                                            </svg>
                                         </button>
+
+                                        {{-- Download GeoJSON (client-side) --}}
                                         <button class="btn-icon dl-btn" title="Lejupielādēt GeoJSON"
                                                 data-name="{{ $polygon->name }}"
                                                 data-coords='@json($polygon->coordinates)'>
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                                            </svg>
                                         </button>
+
+                                        {{-- Toggle details --}}
                                         <button class="btn-icon toggle-btn" title="Rādīt detaļas">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                            </svg>
                                         </button>
                                     </div>
                                 </div>
@@ -174,6 +212,7 @@
                 });
             });
         }
+
         if (sortBtn && list) {
             let asc = true;
             sortBtn.addEventListener('click', () => {
@@ -233,7 +272,6 @@
             try{
                 const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
                 if (!Array.isArray(arr) || arr.length < 3) return null;
-                // Convert [{lat,lng}] -> [[lng,lat], ...] (close ring)
                 const ring = arr.map(p => [Number(p.lng), Number(p.lat)]);
                 const first = ring[0], last = ring[ring.length-1];
                 if (first[0] !== last[0] || first[1] !== last[1]) ring.push([...first]);

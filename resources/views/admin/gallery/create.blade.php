@@ -100,7 +100,7 @@
     (function(){
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Reveal stagger
+
         if (!prefersReduced) {
             const groupObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -118,7 +118,7 @@
             document.querySelectorAll('.reveal').forEach(el => el.classList.add('show'));
         }
 
-        // Drag & drop + priekšskatījums
+
         const dz = document.getElementById('dropzone');
         const input = document.getElementById('image');
         const wrap = document.getElementById('previewWrap');
@@ -178,7 +178,7 @@
         dz?.addEventListener('drop', e => {
             const file = e.dataTransfer.files?.[0];
             if (!file) return;
-            input.files = e.dataTransfer.files; // nodod inputam
+            input.files = e.dataTransfer.files;
             setPreview(file);
         });
     })();
@@ -186,7 +186,7 @@
 
     {{-- Stili --}}
     <style>
-    /* Dūmaka / Fog */
+
     .fog {
         position:absolute; width:40vw; height:40vw; min-width:360px; min-height:360px;
         background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 60%);
@@ -198,7 +198,6 @@
     .fog-3{ top:40%; right:20%; animation-duration:38s; opacity:.18; }
     @keyframes fogDrift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-40px) scale(1.12)} 100%{transform:translate(0,0) scale(1)} }
 
-    /* Reveal */
     [data-reveal-group] .reveal { opacity:0; transform: translateY(14px) scale(.98); transition: opacity .6s ease, transform .6s ease; }
     [data-reveal-group] .reveal.show { opacity:1; transform: none; }
     </style>

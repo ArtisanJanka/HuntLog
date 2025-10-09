@@ -7,19 +7,16 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-    // Show profile edit page
     public function edit(Request $request)
     {
     $user = $request->user();
 
-    // Get all polygons for the logged-in user
     $polygons = $user->polygons()->get();
 
     return view('profile.edit', compact('user', 'polygons'));
     }
 
 
-    // Update profile
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -34,7 +31,6 @@ class ProfileController extends Controller
         return back()->with('success', 'Profile updated!');
     }
 
-    // Delete profile
     public function destroy()
     {
         $user = Auth::user();

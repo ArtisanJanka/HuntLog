@@ -31,9 +31,10 @@ class HuntingTypeController extends Controller
 
     public function edit(HuntingType $huntingType)
     {
-    // Pass as 'type' to match your view
+
     return view('admin.hunting-types.edit', ['type' => $huntingType]);
     }
+
 
     public function update(Request $request, HuntingType $huntingType)
     {

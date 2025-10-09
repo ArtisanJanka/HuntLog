@@ -78,7 +78,7 @@
     (function(){
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Reveal stagger
+       
         if (!prefersReduced) {
             const groupObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -96,7 +96,7 @@
             document.querySelectorAll('.reveal').forEach(el => el.classList.add('show'));
         }
 
-        // Slugify ar LV transliterāciju
+        
         const map = {
             'ā':'a','č':'c','ē':'e','ģ':'g','ī':'i','ķ':'k','ļ':'l','ņ':'n','š':'s','ū':'u','ž':'z',
             'Ā':'a','Č':'c','Ē':'e','Ģ':'g','Ī':'i','Ķ':'k','Ļ':'l','Ņ':'n','Š':'s','Ū':'u','Ž':'z',
@@ -122,7 +122,7 @@
             prevEl.textContent = v || '—';
         }
 
-        // Inicializācija: ja esošais slug = slugify(nosaukums), ieslēdzam auto; citādi atstājam manuālu režīmu
+        
         const initialName = nameEl?.value || '';
         const initialSlug = slugEl?.value || '';
         const generated = slugify(initialName);
@@ -134,7 +134,6 @@
         }
         updatePreview();
 
-        // Saistība starp laukiem
         nameEl?.addEventListener('input', () => {
             if (autoEl.checked && !userTouchedSlug) {
                 slugEl.value = slugify(nameEl.value);
@@ -144,7 +143,7 @@
 
         slugEl?.addEventListener('input', () => {
             userTouchedSlug = true;
-            autoEl.checked = false; // lietotājs manuāli laboja — izslēdzam auto
+            autoEl.checked = false;
             updatePreview();
         });
 

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -53,20 +52,29 @@ class User extends Authenticatable
     public function polygons()
     {
         return $this->hasMany(Polygon::class);
+        return $this->belongsToMany(\App\Models\Group::class);
+
     }
 
-
-    // Users that belong to a leader
-// Leader (User) has many team members
     public function team()
     {
         return $this->hasMany(User::class, 'leader_id');
     }
 
-
-// If you want, a user belongs to a leader
     public function leader()
     {
         return $this->belongsTo(User::class, 'leader_id');
     }
+
+    public function groups()
+    {
+        return $this->belongsToMany(\App\Models\Group::class)
+        ->withPivot(['role','status'])->withTimestamps();
+
+    }
+    public function ledGroups()
+    {
+        return $this->hasMany(\App\Models\Group::class, 'leader_id');
+    }
+
 }

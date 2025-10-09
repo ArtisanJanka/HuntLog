@@ -1,12 +1,25 @@
 <x-app-layout>
     {{-- =========================
-         HERO (CINEMATIC + FOG)
+         HERO (CINEMATIC + FOG) with VIDEO BG
     ========================== --}}
     <section class="relative min-h-[92vh] flex items-center overflow-hidden">
-        <div id="hero-bg"
-             class="absolute inset-0 bg-center bg-cover will-change-transform"
-             style="background-image:url('https://images.pexels.com/photos/167699/pexels-photo-167699.jpeg');">
+        {{-- Parallax wrapper keeps the same id so your JS keeps working --}}
+        <div id="hero-bg" class="absolute inset-0 will-change-transform">
+            <video
+                class="absolute inset-0 w-full h-full object-cover"
+                src="{{ asset('storage/videos/hunting.mp4') }}"
+                playsinline
+                muted
+                loop
+                autoplay
+                preload="metadata"
+                poster="https://images.pexels.com/photos/167699/pexels-photo-167699.jpeg"
+                aria-hidden="true"
+                tabindex="-1"
+            ></video>
         </div>
+
+        {{-- Cinematic darken + grain --}}
         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
         <div class="absolute inset-0 pointer-events-none hero-grain"></div>
 
@@ -17,6 +30,7 @@
             <div class="fog fog-3"></div>
         </div>
 
+        {{-- Content --}}
         <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-20">
             <div class="max-w-3xl" data-reveal-group>
                 <span class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-emerald-300 text-xs tracking-widest uppercase reveal">
@@ -42,7 +56,7 @@
                     <a href="{{ route('gallery') }}" class="cta-secondary">Apskatīt galeriju</a>
                 </div>
 
-                <div class="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm text-gray-3 00 reveal">
+                <div class="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm text-gray-300 reveal">
                     <div class="stat"><span class="stat-value">12k+</span><span class="stat-label">Ieraksti</span></div>
                     <div class="stat"><span class="stat-value">85+</span><span class="stat-label">Mednieku grupas</span></div>
                     <div class="stat"><span class="stat-value">99.9%</span><span class="stat-label">Uptime</span></div>
@@ -51,6 +65,7 @@
             </div>
         </div>
 
+        {{-- Soft glows --}}
         <div class="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl"></div>
         <div class="pointer-events-none absolute bottom-[-6rem] left-[-6rem] h-80 w-80 rounded-full bg-sky-500/10 blur-3xl"></div>
     </section>
@@ -214,11 +229,10 @@
 {{-- ================
      INTERACTIVITY
 ================ --}}
-
 <script>
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Hero parallax
+  // Parallax on the wrapper (#hero-bg). Works with video just like the image.
   const hero = document.getElementById('hero-bg');
   if (hero && !prefersReduced) {
     document.addEventListener('mousemove', (e) => {
@@ -228,13 +242,10 @@
     });
   }
 
-  // ===== Scroll reveal with stagger =====
   function setupReveals() {
     const groups = document.querySelectorAll('[data-reveal-group]');
     const singleObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('show');
-      });
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('show'); });
     }, { threshold: 0.18 });
 
     const groupObserver = new IntersectionObserver((entries) => {
@@ -254,7 +265,6 @@
   }
   if (!prefersReduced) setupReveals(); else document.querySelectorAll('.reveal').forEach(el => el.classList.add('show'));
 
-  // ===== Feature card spotlight ring (follows mouse) =====
   function setupSpotlight() {
     document.querySelectorAll('.spotlight').forEach(card => {
       card.addEventListener('mousemove', (e) => {
@@ -272,7 +282,7 @@
   }
   setupSpotlight();
 
-  // ===== Testimonials slider (as before) =====
+  // Testimonials slider (unchanged)
   (function(){
     const track = document.getElementById('testi-track');
     if (!track) return;
@@ -298,7 +308,6 @@
     function autoplay(){ timer = setInterval(() => go(index+1), 4500); }
     function resetAutoplay(){ if (timer) clearInterval(timer); if (!prefersReduced) autoplay(); }
 
-    // Drag / Swipe
     let startX=0, currentX=0, dragging=false;
     const start = x => { dragging=true; startX=x; track.classList.add('grabbing'); };
     const move  = x => { if(!dragging) return; currentX = x-startX; track.style.transform = `translateX(calc(-${index*100}% + ${currentX}px))`; };
@@ -320,10 +329,9 @@
 </script>
 
 {{-- ================
-     PREMIUM STYLES (no @apply, pure CSS so it works inline)
+     PREMIUM STYLES (unchanged, just works with video)
 ================ --}}
 <style>
-/* Cinematic grain overlay */
 .hero-grain {
   background-image:
     radial-gradient(ellipse at top left, rgba(255,255,255,0.06), transparent 40%),
@@ -331,7 +339,6 @@
   mix-blend-mode: overlay;
 }
 
-/* Fog / Smoke */
 .fog {
   position:absolute; width:40vw; height:40vw; min-width:360px; min-height:360px;
   background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 60%);
@@ -345,7 +352,6 @@
 .fog-5{ bottom:20%; right:8%; animation-duration:38s; opacity:.22; }
 @keyframes fogDrift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-40px) scale(1.15)} 100%{transform:translate(0,0) scale(1)} }
 
-/* Buttons */
 .cta-primary {
   display:inline-flex; align-items:center; gap:.5rem; padding:.75rem 1.5rem;
   border-radius:.5rem; font-weight:600; background:#059669; color:#fff;
@@ -361,12 +367,10 @@
 }
 .cta-secondary:hover { color:#6ee7b7; background:rgba(255,255,255,.15); border-color:rgba(16,185,129,.5); }
 
-/* Stats */
 .stat { border-radius:.75rem; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); padding:.75rem 1rem; backdrop-filter: blur(6px); }
 .stat-value { display:block; font-size:1.375rem; font-weight:800; color:#fff; }
 .stat-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.2em; color:#9ca3af; }
 
-/* Feature Cards: spotlight ring + brighter emerald hover */
 .feature-card {
   position: relative;
   border-radius:1rem;
@@ -379,11 +383,7 @@
   opacity:0; transition: transform .7s ease, opacity .7s ease, box-shadow .3s ease;
   --spot-x: 50%; --spot-y: 50%;
 }
-.feature-card.show,
-.reveal.show + .feature-card { /* safety */ }
 .feature-card:hover { box-shadow:0 18px 56px rgba(0,0,0,.5), inset 0 0 0 1px rgba(16,185,129,.25); }
-
-/* Spotlight Ring that follows mouse */
 .feature-card::before {
   content:""; position:absolute; inset:-2px; border-radius:inherit; padding:2px;
   background:
@@ -391,12 +391,10 @@
       rgba(16,185,129,.85), rgba(16,185,129,.35) 35%, rgba(16,185,129,0) 60%) border-box;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
-  opacity:0; transition: opacity .25s ease;
-  pointer-events:none;
+  opacity:0; transition: opacity .25s ease; pointer-events:none;
 }
 .feature-card:hover::before { opacity:1; }
 
-/* Inner content */
 .feature-card__icon { font-size:1.75rem; margin-bottom:1rem; }
 .feature-card__title { font-size:1.25rem; font-weight:800; color:#fff; transition: color .2s ease; }
 .feature-card__body  { margin-top:.5rem; color:#d1d5db; line-height:1.7; }
@@ -404,13 +402,11 @@
 .feature-card:hover .feature-card__title { color:#34d399; }
 .feature-card:hover .feature-card__link  { color:#10b981; }
 
-/* Map pins */
 .pin { position:relative; display:block; width:12px; height:12px; border-radius:9999px; background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,.5); }
 .pin::after { content:""; position:absolute; inset:-8px; border-radius:9999px; background: radial-gradient(circle, rgba(16,185,129,.35) 0%, rgba(16,185,129,0) 60%); animation: ping 1.8s ease-out infinite; }
 .delay-200::after { animation-delay:.2s; } .delay-400::after { animation-delay:.4s; }
 @keyframes ping { 0%{transform:scale(.6);opacity:.8} 100%{transform:scale(2.4);opacity:0} }
 
-/* Testimonials slider */
 .slider { position:relative; overflow:hidden; }
 .slider-track { display:flex; width:300%; transition: transform .6s cubic-bezier(.22,.61,.36,1); cursor:grab; }
 .slider-track.grabbing { cursor:grabbing; }
@@ -427,11 +423,9 @@
 .dot { width:8px; height:8px; border-radius:9999px; background:rgba(255,255,255,.3); transition: transform .2s, background .2s; }
 .dot.active { transform:scale(1.3); background:#10b981; }
 
-/* Reveal animation (global) */
 .reveal { opacity:0; transform: translateY(16px) scale(.98); transition: opacity .6s ease, transform .6s ease; }
 .reveal.show { opacity:1; transform: none; }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   #hero-bg { transform:none !important; }
   .reveal { transition: none; opacity: 1 !important; transform: none !important; }

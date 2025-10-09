@@ -16,6 +16,7 @@
             ['route' => 'contacts',  'label' => 'Kontakti'],
             ['route' => 'calendar',  'label' => 'Kalendārs'],
             ['route' => 'map.index', 'label' => 'Karte'],
+            ['route' => 'zoo',       'label' => 'Zoo'],
         ];
     @endphp
 
@@ -49,8 +50,7 @@
                        ]"
                     >
                         {{ $link['label'] }}
-                        <span class="pointer-events-none absolute left-3 right-3 -bottom-0.5 h-0.5 rounded bg-emerald-400 transition
-                                     {{ $active ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100' }}"></span>
+                        <span class="pointer-events-none absolute left-3 right-3 -bottom-0.5 h-0.5 rounded bg-emerald-400 transition {{ $active ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100' }}"></span>
                     </a>
                 @endforeach
 
@@ -70,14 +70,13 @@
                 @endauth
             </div>
 
-            <!-- User Dropdown -->
             @auth
             <div class="hidden sm:flex sm:items-center sm:space-x-2">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
                             :class="scrolled ? 'text-gray-100 hover:text-emerald-400' : 'text-white hover:text-emerald-300'"
-                            class="flex items-center focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded transition"
+                            class="flex items-center rounded-lg transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             aria-label="Lietotāja izvēlne"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" viewBox="0 0 24 24" fill="currentColor">
@@ -85,22 +84,60 @@
                             </svg>
                         </button>
                     </x-slot>
+
+                    
                     <x-slot name="content">
-                        <div class="bg-gray-900 text-gray-100 rounded-md shadow-lg p-4 space-y-2 min-w-56">
-                            <div class="font-semibold">{{ Auth::user()->name }}</div>
-                            <div class="text-sm text-gray-300">{{ Auth::user()->email }}</div>
-                            <x-dropdown-link :href="route('profile.edit')" class="hover:bg-emerald-600/20 rounded px-2 py-1 block">Profils</x-dropdown-link>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();" class="hover:bg-red-600/20 rounded px-2 py-1 block">Izrakstīties</x-dropdown-link>
-                            </form>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute -top-2 right-6 h-4 w-4 rotate-45
+                                         bg-black/60 backdrop-blur-md border-l border-t border-white/10"></span>
+                            <div class="w-64 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-md
+                                        shadow-2xl shadow-black/50 p-4 text-gray-100">
+                                <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+                                    <div class="h-10 w-10 rounded-full bg-emerald-500/20 text-emerald-300
+                                                flex items-center justify-center font-bold">
+                                        @php
+                                            $initials = collect(explode(' ', Auth::user()->name ?? ''))
+                                                ->filter()
+                                                ->map(fn($p) => mb_strtoupper(mb_substr($p,0,1)))
+                                                ->join('');
+                                        @endphp
+                                        {{ $initials ?: '👤' }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-semibold truncate">{{ Auth::user()->name }}</div>
+                                        <div class="text-xs text-gray-300 truncate">{{ Auth::user()->email }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-2 space-y-1">
+                                    <a href="{{ route('profile.edit') }}"
+                                       class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium
+                                              hover:bg-white/10 hover:text-emerald-300 transition">
+                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4 0-8 2-8 5v3h16v-3c0-3-4-5-8-5Z"/>
+                                        </svg>
+                                        Profils
+                                    </a>
+
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                                class="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium
+                                                       text-red-300 hover:text-red-200 hover:bg-red-900/20 transition">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M10 3h4a2 2 0 0 1 2 2v4h-2V5h-4v14h4v-4h2v4a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm9 8-3-3v2h-6v2h6v2l3-3Z"/>
+                                            </svg>
+                                            Izrakstīties
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </x-slot>
                 </x-dropdown>
             </div>
             @endauth
 
-            <!-- Mobile Hamburger -->
             <div class="sm:hidden flex items-center">
                 <button @click="toggle()" :aria-expanded="open.toString()" aria-controls="mobile-menu"
                         :class="scrolled ? 'text-gray-100' : 'text-white'"
@@ -114,8 +151,11 @@
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" x-show="open" x-transition.opacity @keydown.escape.window="open=false" @click.self="open=false"
+    <div id="mobile-menu"
+         x-show="open"
+         x-transition.opacity
+         @keydown.escape.window="open=false"
+         @click.self="open=false"
          class="sm:hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm">
         <div class="mx-4 mt-24 rounded-2xl border border-white/10 bg-gray-900/95 p-6 shadow-2xl">
             <div class="flex flex-col items-stretch gap-2">
@@ -125,14 +165,31 @@
                         {{ $link['label'] }}
                     </a>
                 @endforeach
+
                 @auth
+                    @if(Auth::user()->is_admin)
+                        <a href="{{ route('admin.dashboard') }}" @click="open=false"
+                           class="block w-full rounded-lg px-4 py-3 text-lg font-semibold text-white hover:bg-white/10 hover:text-emerald-300 transition">
+                            Admin
+                        </a>
+                    @endif
+
+                    @if(Auth::user()->is_leader)
+                        <a href="{{ route('leader.dashboard') }}" @click="open=false"
+                           class="block w-full rounded-lg px-4 py-3 text-lg font-semibold text-white hover:bg-white/10 hover:text-emerald-300 transition">
+                            Vadītājs
+                        </a>
+                    @endif
+
                     <a href="{{ route('profile.edit') }}" @click="open=false"
                        class="block w-full rounded-lg px-4 py-3 text-lg font-semibold text-white hover:bg-white/10 hover:text-emerald-300 transition">
                         Profils
                     </a>
+
                     <form method="POST" action="{{ route('logout') }}" class="mt-1">
                         @csrf
-                        <button type="submit" class="w-full rounded-lg px-4 py-3 text-lg font-semibold text-red-400 hover:text-red-300 hover:bg-red-900/20 transition">
+                        <button type="submit"
+                                class="w-full rounded-lg px-4 py-3 text-lg font-semibold text-red-300 hover:text-red-200 hover:bg-red-900/20 transition">
                             Izrakstīties
                         </button>
                     </form>
@@ -162,10 +219,8 @@ function navbar() {
                 this.raf = requestAnimationFrame(() => {
                     this.scrolled = window.scrollY > 50;
 
-                    // Hide when scrolling down
                     this.hiddenNav = window.scrollY > this.lastY && window.scrollY > 80;
 
-                    // Show glow when reappearing
                     if (!this.hiddenNav && window.scrollY < this.lastY) {
                         this.glow = true;
                         clearTimeout(this._glowTimer);

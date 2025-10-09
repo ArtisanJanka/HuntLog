@@ -17,7 +17,6 @@ class Waypoint extends Model
         'description',
     ];
 
-    // A waypoint belongs to a user
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -132,7 +132,6 @@
     (function(){
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Reveal stagger
         if (!prefersReduced) {
             const groupObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -150,7 +149,6 @@
             document.querySelectorAll('.reveal').forEach(el => el.classList.add('show'));
         }
 
-        // Elements
         const grid = document.getElementById('grid');
         const search = document.getElementById('search');
         const filterType = document.getElementById('filterType');
@@ -173,7 +171,6 @@
                 if (show) visible++;
             });
 
-            // Optional: show empty state if none
             if (grid && !visible) {
                 if (!grid._empty) {
                     const div = document.createElement('div');
@@ -206,7 +203,7 @@
         search?.addEventListener('input', applyFilters);
         filterType?.addEventListener('change', applyFilters);
 
-        // Lightbox
+
         const lb = document.getElementById('lightbox');
         const lbImg = document.getElementById('lb-img');
         const lbClose = document.getElementById('lb-close');
@@ -214,7 +211,7 @@
         document.addEventListener('click', (e) => {
             const cardImg = e.target.closest('img[data-full]');
             const btnOpen = e.target.closest('.open-lightbox');
-            if (cardImg && !btnOpen) return; // normal click on image does nothing (overlay appears)
+            if (cardImg && !btnOpen) return;
             if (btnOpen) {
                 const art = btnOpen.closest('.card');
                 const img = art?.querySelector('img[data-full]');
@@ -233,7 +230,7 @@
 
     {{-- Styles --}}
     <style>
-    /* Fog / Smoke */
+
     .fog {
         position:absolute; width:40vw; height:40vw; min-width:360px; min-height:360px;
         background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 60%);
@@ -245,11 +242,9 @@
     .fog-3{ top:40%; right:20%; animation-duration:38s; opacity:.18; }
     @keyframes fogDrift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-40px) scale(1.12)} 100%{transform:translate(0,0) scale(1)} }
 
-    /* Reveal */
     [data-reveal-group] .reveal { opacity:0; transform: translateY(14px) scale(.98); transition: opacity .6s ease, transform .6s ease; }
     [data-reveal-group] .reveal.show { opacity:1; transform: none; }
 
-    /* Buttons */
     .btn-primary{
         display:inline-flex; align-items:center; gap:.5rem;
         padding:.6rem 1rem; border-radius:.8rem; font-weight:700; color:white;
@@ -280,14 +275,13 @@
     }
     .btn-icon:hover{ color:#34d399; border-color: rgba(16,185,129,.5); background: rgba(255,255,255,.12); }
 
-    /* Badges */
     .badge{
         display:inline-flex; align-items:center; gap:.4rem; font-size:.75rem; font-weight:700;
         padding:.25rem .5rem; border-radius:.5rem; border:1px solid;
     }
     .badge-type{ color:#c7d2fe; background:rgba(59,130,246,.12); border-color:rgba(59,130,246,.35); }
 
-    /* Cards */
+
     .card { transition: transform .22s ease, box-shadow .25s ease, border-color .25s ease; }
     .card:hover{ transform: translateY(-2px); box-shadow: 0 18px 40px rgba(0,0,0,.45); border-color: rgba(16,185,129,.35); }
     </style>

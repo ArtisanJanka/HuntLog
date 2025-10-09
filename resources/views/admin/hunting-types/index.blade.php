@@ -109,7 +109,7 @@
     (function(){
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Reveal stagger
+
         if (!prefersReduced) {
             const groupObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -127,7 +127,6 @@
             document.querySelectorAll('.reveal').forEach(el => el.classList.add('show'));
         }
 
-        // Search + sort
         const search = document.getElementById('type-search');
         const sortName = document.getElementById('sort-name');
         const sortSlug = document.getElementById('sort-slug');
@@ -159,7 +158,7 @@
         sortName?.addEventListener('click', () => { sortBy('name', nameAsc); nameAsc = !nameAsc; sortName.classList.toggle('ring-2'); sortName.classList.toggle('ring-emerald-500'); });
         sortSlug?.addEventListener('click', () => { sortBy('slug', slugAsc); slugAsc = !slugAsc; sortSlug.classList.toggle('ring-2'); sortSlug.classList.toggle('ring-emerald-500'); });
 
-        // Copy slug
+
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('.copy-slug');
             if (!btn) return;
@@ -168,7 +167,6 @@
             navigator.clipboard.writeText(slug).then(()=> toast('Slug nokopēts!'));
         });
 
-        // Toast
         const toastRoot = document.getElementById('toast-root');
         function toast(msg){
             const div = document.createElement('div');
@@ -183,7 +181,6 @@
 
     {{-- Styles --}}
     <style>
-    /* Fog / Smoke */
     .fog {
         position:absolute; width:40vw; height:40vw; min-width:360px; min-height:360px;
         background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 60%);
@@ -195,11 +192,9 @@
     .fog-3{ top:40%; right:20%; animation-duration:38s; opacity:.18; }
     @keyframes fogDrift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-40px) scale(1.12)} 100%{transform:translate(0,0) scale(1)} }
 
-    /* Reveal */
     [data-reveal-group] .reveal { opacity:0; transform: translateY(14px) scale(.98); transition: opacity .6s ease, transform .6s ease; }
     [data-reveal-group] .reveal.show { opacity:1; transform: none; }
 
-    /* Buttons */
     .btn-primary{
         display:inline-flex; align-items:center; gap:.5rem;
         padding:.6rem 1rem; border-radius:.8rem; font-weight:700; color:white;

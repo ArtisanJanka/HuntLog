@@ -12,19 +12,25 @@ class GroupRequest extends Model
     protected $fillable = [
         'user_id',
         'hunting_type_id',
+        'group_id',    
         'group_name',
         'status',
+        'note',
     ];
 
-    // Relationship to User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relationship to HuntingType
+
     public function huntingType()
     {
         return $this->belongsTo(HuntingType::class);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
     }
 }

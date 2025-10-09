@@ -16,7 +16,7 @@ class AdminDashboardController extends Controller
         $galleryCount = GalleryItem::count();
     $huntingTypeCount = HuntingType::count();
     $users = User::all();
-    $messages = Contact::latest()->take(5)->get(); // last 5 messages
+    $messages = Contact::latest()->take(5)->get();
     $messageCount = Contact::count();
 
         return view('admin.dashboard', compact(

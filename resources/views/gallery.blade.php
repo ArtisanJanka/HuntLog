@@ -164,20 +164,17 @@
 
     {{-- Styles --}}
     <style>
-        /* Chips */
         .chip { padding:.5rem .75rem; border-radius:.75rem; background:#111827; color:#e5e7eb; border:1px solid #374151; transition:all .2s ease; }
         .chip:hover { border-color:#10b981; }
         .chip-active { background:linear-gradient(90deg, rgba(16,185,129,.20), rgba(16,185,129,.10)); color:#d1fae5; border-color:rgba(16,185,129,.45); }
 
-        /* No scrollbar helper */
         .no-scrollbar { scrollbar-width: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        /* Pop-in reveal for tiles */
+
         @keyframes popIn { from { opacity:0; transform: scale(.96) translateY(16px); } to { opacity:1; transform: scale(1) translateY(0); } }
         .gi { animation: popIn .55s cubic-bezier(.2,.65,.25,1) forwards; }
 
-        /* Skeleton shimmer */
         .skeleton {
             position:absolute; inset:0;
             background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.12), rgba(255,255,255,.06));
@@ -197,18 +194,14 @@
                 q: '',
                 activeType: 'all',
                 showCount: 16,
-                // internal cache of items for lightbox nav
                 _nodes: [],
                 lightbox: { open:false, idx:null, src:'', title:'', type:'', typeId:null },
-
-                init() {
-                    // cache nodes in DOM order for lightbox navigation
+                init() {     
                     this._nodes = Array.from(document.querySelectorAll('#gallery .gi'))
                         .filter(el => window.getComputedStyle(el).display !== 'none')
                         .map((el, idx) => {
                             const img = el.querySelector('img');
                             const chip = el.querySelector('.absolute .inline-flex');
-                            // pull data from the click handler inline attributes too if needed
                             return {
                                 el,
                                 idx,
@@ -219,15 +212,15 @@
                             };
                         });
 
-                    // re-cache when filters/search change
+                    
                     this.$watch('q', () => this._recache());
                     this.$watch('activeType', () => this._recache());
                 },
 
                 _recache() {
-                    // After filtering, rebuild the order for nav
+                    
                     const tiles = Array.from(document.querySelectorAll('#gallery .gi'))
-                        .filter(el => el.offsetParent !== null); // visible ones only
+                        .filter(el => el.offsetParent !== null);
                     this._nodes = tiles.map((el, i) => {
                         const img = el.querySelector('img');
                         const chip = el.querySelector('.absolute .inline-flex');
@@ -254,7 +247,7 @@
 
                 openLightbox({ idx, src, title, type, typeId }) {
                     this.lightbox = { open:true, idx, src, title, type, typeId };
-                    // allow arrow keys
+                   
                     window.addEventListener('keydown', this._keyHandler);
                 },
                 closeLightbox() {
@@ -272,7 +265,7 @@
                 _keyHandler: null,
             };
         }
-        // attach key handler prototype-safe
+        
         (function attachNav(){
             const proto = galleryState.prototype || Object.getPrototypeOf(galleryState());
             if (!proto._keyHandlerAttached) {

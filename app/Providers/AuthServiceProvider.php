@@ -2,18 +2,22 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\GroupEvent;
+use App\Policies\GroupEventPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The model to policy mappings for the application.
+     * The policy mappings for the application.
      *
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        Polygon::class => PolygonPolicy::class,
+        GroupEvent::class => GroupEventPolicy::class,
+        // Add other model => policy mappings here...
+        // \App\Models\Group::class => \App\Policies\GroupPolicy::class,
     ];
 
     /**
@@ -21,6 +25,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+        // Optional: super-admin shortcut (adjust to your app’s admin check)
+        // Gate::before(function ($user, $ability) {
+        //     return $user->is_admin ? true : null;
+        // });
     }
 }

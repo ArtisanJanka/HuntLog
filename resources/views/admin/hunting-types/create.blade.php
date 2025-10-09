@@ -77,7 +77,7 @@
     (function(){
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Reveal stagger
+
         if (!prefersReduced) {
             const groupObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -95,7 +95,7 @@
             document.querySelectorAll('.reveal').forEach(el => el.classList.add('show'));
         }
 
-        // Slugify LV: aizvieto diakritiskās zīmes, atstarpes -> '-', noņem liekos simbolus
+ 
         const map = {
             'ā':'a','č':'c','ē':'e','ģ':'g','ī':'i','ķ':'k','ļ':'l','ņ':'n','š':'s','ū':'u','ž':'z',
             'Ā':'a','Č':'c','Ē':'e','Ģ':'g','Ī':'i','Ķ':'k','Ļ':'l','Ņ':'n','Š':'s','Ū':'u','Ž':'z',
@@ -105,10 +105,10 @@
 
         function slugify(s){
             s = translit(s).toLowerCase();
-            s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // nolīdzina citas diakritikas
-            s = s.replace(/[^a-z0-9\s-]/g, ''); // atstāj burtus/ciparus/atstarpes/-
-            s = s.trim().replace(/\s+/g, '-');  // atstarpes -> '-'
-            s = s.replace(/-+/g, '-');          // saplacina '--'
+            s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            s = s.replace(/[^a-z0-9\s-]/g, '');
+            s = s.trim().replace(/\s+/g, '-'); 
+            s = s.replace(/-+/g, '-');          
             return s;
         }
 
@@ -122,7 +122,7 @@
             prevEl.textContent = v || '—';
         }
 
-        // ja slug nav manuāli aizskarts, ģenerē no nosaukuma
+
         let userTouchedSlug = false;
 
         nameEl?.addEventListener('input', () => {
@@ -145,7 +145,6 @@
             }
         });
 
-        // init preview on load
         updatePreview();
         if (autoEl.checked && !slugEl.value) {
             slugEl.value = slugify(nameEl.value || '');

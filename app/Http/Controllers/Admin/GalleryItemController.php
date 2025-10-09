@@ -10,27 +10,19 @@ use Illuminate\Support\Facades\Storage;
 
 class GalleryItemController extends Controller
 {
-    /**
-     * Show all gallery items.
-     */
+
     public function index()
     {
         $galleryItems = GalleryItem::with('huntingType')->latest()->get();
         return view('admin.gallery.index', compact('galleryItems'));
     }
 
-    /**
-     * Show the create form.
-     */
     public function create()
     {
         $types = HuntingType::all();
         return view('admin.gallery.create', compact('types'));
     }
 
-    /**
-     * Store a new gallery item.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -62,9 +54,6 @@ class GalleryItemController extends Controller
         ]);
     }
 
-    /**
-     * Update an existing gallery item.
-     */
     public function update(Request $request, GalleryItem $gallery)
     {
         $data = $request->validate([
@@ -75,7 +64,7 @@ class GalleryItemController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // delete old image if exists
+
             if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
                 Storage::disk('public')->delete($gallery->image_path);
             }
@@ -88,9 +77,7 @@ class GalleryItemController extends Controller
                          ->with('success', 'Gallery item updated successfully!');
     }
 
-    /**
-     * Delete a gallery item.
-     */
+
     public function destroy(GalleryItem $gallery)
     {
         if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {

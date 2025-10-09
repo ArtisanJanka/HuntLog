@@ -9,20 +9,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Fona animēts gradients */
         @keyframes floatGradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        /* Fade-in augšup */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(12px); }
             to   { opacity: 1; transform: translateY(0); }
         }
         .animate-fadeInUp { animation: fadeInUp .8s ease both; animation-delay: .15s; }
 
-        /* Labāks fokusa outlines */
         .focus-outline:focus { outline: none; box-shadow: 0 0 0 3px rgba(16,185,129,.45); }
     </style>
 </head>
@@ -33,18 +30,16 @@
 
     <main class="min-h-screen flex items-center justify-center p-6">
         <div class="max-w-3xl w-full">
-            <!-- Kartīte -->
             <section
                 class="animate-fadeInUp relative overflow-hidden rounded-3xl
                        bg-white/10 backdrop-blur-xl shadow-2xl ring-1 ring-white/20
                        dark:bg-black/20">
-                <!-- Dekoratīva virsējā gaisma -->
                 <div class="absolute inset-x-0 -top-20 h-48 blur-3xl opacity-60 pointer-events-none"
                      style="background: radial-gradient(40rem 18rem at top, rgba(16,185,129,.35), transparent 60%);">
                 </div>
 
                 <div class="relative px-8 sm:px-12 py-12">
-                    <!-- Logo / zīmols -->
+                   
                     <div class="flex items-center gap-3 mb-6">
                         <div class="h-10 w-10 rounded-xl bg-emerald-500/90 grid place-items-center
                                     text-white font-bold shadow-lg">H</div>
@@ -54,7 +49,7 @@
                         </div>
                     </div>
 
-                    <!-- Virsraksts -->
+                    
                     <div class="mb-8">
                         <h2 class="text-3xl sm:text-4xl font-black leading-tight">
                             Pieraksti. Dalies. <span class="text-emerald-300">Izbaudi dabu.</span>
@@ -65,7 +60,7 @@
                         </p>
                     </div>
 
-                    <!-- Pogas -->
+                    
                     <div class="mt-8 flex flex-wrap gap-3">
                         @if (Route::has('login'))
                             @auth
@@ -94,7 +89,7 @@
                         @endif
                     </div>
 
-                    <!-- Funkciju saraksts -->
+                    
                     <div class="mt-10 grid gap-4 sm:grid-cols-3">
                         <div class="rounded-2xl bg-black/20 ring-1 ring-white/10 p-4 hover:bg-black/25 transition">
                             <div class="text-emerald-300 font-semibold">Ātrs un viegls</div>
@@ -110,7 +105,7 @@
                         </div>
                     </div>
 
-                    <!-- Footer -->
+                    
                     <div class="mt-8 flex items-center justify-between text-xs text-gray-300/80">
                         <span>&copy; {{ date('Y') }} HuntLog</span>
                     </div>
