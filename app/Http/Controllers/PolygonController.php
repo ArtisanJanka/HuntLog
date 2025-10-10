@@ -60,7 +60,7 @@ class PolygonController extends Controller
 
     /**
      * Show a single polygon (policy: owner OR same group).
-     * Renders maps.index with a focused polygon so only that one is drawn.
+     * Renders map.index with a focused polygon so only that one is drawn.
      */
     public function show(Request $request, Polygon $polygon)
     {
@@ -71,9 +71,9 @@ class PolygonController extends Controller
 
         $user      = $request->user();
         $waypoints = $user->waypoints()->get();
-        // We can pass all visible polygons, but the blade will only draw "focus" by default.
         $polygons  = Polygon::visibleTo($user)->get();
 
+        // You can reuse the same view as /map; your Blade uses window.focusPolygon already.
         return view('maps.index', [
             'waypoints' => $waypoints,
             'polygons'  => $polygons,
@@ -82,7 +82,7 @@ class PolygonController extends Controller
     }
 
     /**
-     * Maps page: return visible polygons/waypoints (no forced focus).
+     * Map page: return visible polygons/waypoints; optionally focus via ?polygon=ID
      */
     public function userPolygons(Request $request)
     {
@@ -90,18 +90,22 @@ class PolygonController extends Controller
         $polygons  = Polygon::visibleTo($user)->get();
         $waypoints = $user->waypoints()->get();
 
-        return view('maps.index', compact('polygons', 'waypoints'));
-    }
+        $focus = null;
 
-    /**
-     * Profile edit page: show only visible polygons.
-     */
-    public function edit(Request $request)
-    {
-        $user     = $request->user();
-        $polygons = Polygon::visibleTo($user)->get();
+        if ($request->filled('polygon')) {
+            // If you switch to slugs/uuid later, this still works if getRouteKeyName() is set.
+            $polygon = Polygon::query()->findOrFail($request->polygon);
+            $this->authorize('view', $polygon);
 
-        return view('profile.edit', compact('user', 'polygons'));
+            $geo = $polygon->toGeoJson();
+            abort_unless($geo, 422, 'Invalid polygon');
+
+            $focus = ['geojson' => $geo];
+        }
+
+        // IMPORTANT: use the SAME view your Blade snippet lives in.
+        // Your snippet looked like resources/views/map/index.blade.php
+        return view('maps.index', compact('polygons', 'waypoints', 'focus'));
     }
 
     /**

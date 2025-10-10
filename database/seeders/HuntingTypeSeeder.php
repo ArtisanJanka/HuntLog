@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\HuntingType;
 
 class HuntingTypeSeeder extends Seeder
 {
@@ -12,6 +12,12 @@ class HuntingTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        // Idempotent: safe to run multiple times
+        foreach (['Pīļu medības', 'Dzinēju medības'] as $name) {
+            HuntingType::updateOrCreate(
+                ['name' => $name],   // unique by name
+                []                   // slug is handled in the model's booted()
+            );
+        }
     }
 }

@@ -73,35 +73,37 @@
     {{-- =========================
          MAP GLIMPSE
     ========================== --}}
-    <section class="relative py-20 sm:py-24">
-        <div class="mx-auto max-w-7xl px-6">
-            <div class="grid lg:grid-cols-2 gap-10 items-center" data-reveal-group>
-                <div class="reveal">
-                    <h2 class="text-4xl sm:text-5xl font-extrabold text-white">Medību karte</h2>
-                    <p class="mt-4 text-lg text-gray-300">
-                        Skati maršrutus, notikumus un novērojumus uz interaktīvas kartes. Plāno izbraucienus un dalies ar komandu.
-                    </p>
-                    <div class="mt-8 flex flex-wrap gap-4">
-                        <a href="{{ route('map.index') }}" class="cta-primary">Apskatīt karti</a>
-                        <a href="{{ route('calendar') }}" class="cta-secondary">Plānot kalendārā</a>
-                    </div>
-                </div>
-
-                <div class="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur reveal">
-                    <img
-                        src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?q=80&w=2400&auto=format&fit=crop"
-                        alt="Karte priekšskatījums"
-                        class="w-full h-[380px] object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/20"></div>
-
-                    {{-- Animated pins --}}
-                    <div class="absolute left-[18%] top-[55%]"><span class="pin"></span></div>
-                    <div class="absolute left-[62%] top-[38%]"><span class="pin delay-200"></span></div>
-                    <div class="absolute left-[78%] top-[70%]"><span class="pin delay-400"></span></div>
-                </div>
-            </div>
+<section class="relative py-20 sm:py-24">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="grid lg:grid-cols-2 gap-10 items-center" data-reveal-group>
+      <div class="reveal">
+        <h2 class="text-4xl sm:text-5xl font-extrabold text-white">Medību karte</h2>
+        <p class="mt-4 text-lg text-gray-300">
+          Skati maršrutus, notikumus un novērojumus uz interaktīvas kartes. Plāno izbraucienus un dalies ar komandu.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="{{ route('map.index') }}" class="cta-primary">Apskatīt karti</a>
+          <a href="{{ route('calendar') }}" class="cta-secondary">Plānot kalendārā</a>
         </div>
-    </section>
+      </div>
+
+      <div class="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur reveal">
+        <img
+          src="{{ asset('storage/images/phone.jpg') }}"
+          alt="Karte priekšskatījums"
+          class="w-full h-[380px] object-cover"
+        >
+        <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/20"></div>
+
+        {{-- Animated pins --}}
+        <div class="absolute left-[18%] top-[55%]"><span class="pin"></span></div>
+        <div class="absolute left-[62%] top-[38%]"><span class="pin delay-200"></span></div>
+        <div class="absolute left-[78%] top-[70%]"><span class="pin delay-400"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
     {{-- =========================
          FEATURE PILLARS (SPOTLIGHT + STAGGER)

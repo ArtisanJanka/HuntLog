@@ -37,20 +37,28 @@
         <div class="w-full h-full animate-pulse bg-gradient-to-b from-black/50 via-black/30 to-black/70"></div>
       </div>
 
-      {{-- Animal selector (top-right chips) --}}
+      {{-- Animal selector (mobile: full-width row; desktop: top-right chips) --}}
       <div
         x-show="mounted"
         x-transition:enter="transform transition ease-out duration-500"
         x-transition:enter-start="opacity-0 translate-y-2"
         x-transition:enter-end="opacity-100 translate-y-0"
-        class="absolute top-6 right-4 sm:top-8 sm:right-6 z-40"
+        class="
+          absolute z-40
+          top-16 left-0 right-0 px-4       /* mobile */
+          sm:top-8 sm:left-auto sm:right-6 /* desktop */
+        "
       >
-        <div class="flex items-center gap-2 sm:gap-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-full px-2 py-2">
+        <div
+          class="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar
+                 bg-black/35 backdrop-blur-md border border-white/10 rounded-full
+                 px-2 py-2 w-full sm:w-auto"
+        >
           <template x-for="(a, idx) in animals" :key="a.slug">
             <button
               type="button"
               @click="selectAnimal(idx)"
-              class="rounded-full px-3 py-1.5 text-xs sm:text-sm font-semibold transition border"
+              class="shrink-0 rounded-full px-3 py-1.5 text-xs sm:text-sm font-semibold transition border"
               :class="idx===currentIndex
                       ? 'bg-white text-black border-white/80'
                       : 'bg-white/10 text-white hover:bg-white/15 border-white/10'">
@@ -72,7 +80,7 @@
             x-transition:enter-start="opacity-0 -translate-y-4 scale-[0.98]"
             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
             class="max-w-7xl mx-auto px-4
-                   pt-4 sm:pt-6 lg:pt-8
+                   pt-24 sm:pt-6 lg:pt-8    {{-- extra top space for chips on mobile --}}
                    pb-40 sm:pb-48 lg:pb-56
                    transform-gpu
                    -translate-y-6 sm:-translate-y-10 lg:-translate-y-14">
@@ -94,7 +102,7 @@
         x-transition:enter="transform transition ease-out duration-500 delay-100"
         x-transition:enter-start="opacity-0 translate-y-4 scale-[0.98]"
         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-        class="absolute inset-x-0 z-[9999] pointer-events-auto bottom-32 sm:bottom-36 lg:bottom-40"
+        class="absolute inset-x-0 z-[9999] pointer-events-auto bottom-24 sm:bottom-36 lg:bottom-40"
         :class="isFullscreen && !showUI ? 'opacity-0' : 'opacity-100'"
       >
         <div class="max-w-7xl mx-auto px-4">
@@ -231,6 +239,10 @@
 
   {{-- FS transition, pre-enter + exit keyframes & reduced motion support --}}
   <style>
+    /* mobile scrollbar hide for chip row */
+    .no-scrollbar{scrollbar-width:none;}
+    .no-scrollbar::-webkit-scrollbar{display:none;}
+
     #heroSection.fs-entering { transform: scale(0.98); opacity: 0.85; }
     .animate-fs-out  { animation: fsOut 340ms ease both; }
     @keyframes fsOut { from { transform: scale(1.02); opacity: 1; } to { transform: scale(1.00); opacity: 1; } }
@@ -261,7 +273,7 @@
         // indices
         currentIndex: 0,
 
-        // animals (Lūsis has no audio for now)
+        // animals
         animals: [
           {
             slug:'briedis', short:'Briedis', title:'Briedis (Red Deer)',
@@ -294,7 +306,7 @@
             slug:'lusis', short:'Lūsis', title:'Lūsis (Eurasian Lynx)',
             lead:'Slepenīgs meža plēsējs; retāk sastopams, medīšanas noteikumi stingri regulēti.',
             video:"{{ asset('storage/videos/lusis.mp4') }}",
-            audio:null, // nav faila pagaidām
+            audio:"{{ asset('storage/audio/lusis.mp3') }}",
             huntMonths:['— (aizsargājama vai stingri regulēta)'],
             traits:'Klusa, uzmanīga; medī no slēpņa vai izsekojot.',
             facts:['Raksturīgas “sānu bārdas” un melni kušķi uz ausīm.','Galvenais medījums — stirnas un zaķi.','Lieliska redze krēslā un naktī.']
@@ -403,8 +415,7 @@
             this.audioIsPlaying = false;
             this.audioProgress = 0;
             this.audioTimeLabel = `00:00 / ${fmt(this.wavesurfer.getDuration())}`;
-            // ensure a draw if size changed during decode
-            this.wavesurfer.setOptions({});
+            this.wavesurfer.setOptions({}); // ensure draw after decode
           });
           this.wavesurfer.on('play', () => { if (isFresh()) this.audioIsPlaying = true; });
           this.wavesurfer.on('pause', () => { if (isFresh()) this.audioIsPlaying = false; });
@@ -467,7 +478,7 @@
           }
           this.startVideo();
 
-          // fullscreen enter/leave → animate + UI logic
+          // fullscreen enter/leave
           const onFsChange = () => {
             const entering = !!(document.fullscreenElement || document.webkitFullscreenElement);
             this.isFullscreen = entering;
