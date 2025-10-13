@@ -41,7 +41,7 @@ class ContactController extends Controller
 
         Contact::create($data);
 
-        return back()->with('success', 'Message sent successfully!');
+        return back()->with('success', 'Ziņa veiksmīgi aizsūtīta!');
     }
 
     /**

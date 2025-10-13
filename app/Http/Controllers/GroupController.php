@@ -33,7 +33,7 @@ class GroupController extends Controller
 
             $group->members()->attach($leader->id, ['role' => 'co_leader', 'status' => 'active']);
 
-            return redirect()->back()->with('success', 'Group created.');
+            return redirect()->back()->with('success', 'Grupa izveidota.');
         });
     }
 

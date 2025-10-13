@@ -19,7 +19,7 @@ use App\Http\Controllers\GroupRequestController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupEventController;
 
-use App\Http\Controllers\MapLinkController; // <-- ADDED
+use App\Http\Controllers\MapLinkController;
 use App\Models\GroupEvent;
 
 /*
@@ -94,7 +94,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/map', [PolygonController::class, 'userPolygons'])->name('map.index');
     Route::get('/map/{waypoint}', [WaypointController::class, 'show'])->name('map.show');
 
-    // ----- Pattern B: Signed link -> redirects to /map?polygon=ID -----
     Route::get('/poly/open/{polygon}', [MapLinkController::class, 'open'])
         ->middleware(['signed', 'can:view,polygon']) // requires valid signature + policy
         ->name('polygon.open');

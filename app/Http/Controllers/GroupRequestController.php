@@ -18,6 +18,6 @@ class GroupRequestController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Request sent!');
+        return redirect()->back()->with('success', 'Pieteikums aizsūtīts!');
     }
 }

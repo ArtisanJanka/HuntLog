@@ -1,9 +1,5 @@
 <x-app-layout>
-    {{-- =========================
-         HERO (CINEMATIC + FOG) with VIDEO BG
-    ========================== --}}
     <section class="relative min-h-[92vh] flex items-center overflow-hidden">
-        {{-- Parallax wrapper keeps the same id so your JS keeps working --}}
         <div id="hero-bg" class="absolute inset-0 will-change-transform">
             <video
                 class="absolute inset-0 w-full h-full object-cover"

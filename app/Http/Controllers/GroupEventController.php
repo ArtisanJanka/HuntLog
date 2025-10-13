@@ -65,7 +65,7 @@ class GroupEventController extends Controller
             abort_unless(
                 Polygon::where('id', $data['polygon_id'])->where('group_id', $group->id)->exists(),
                 422,
-                'Polygon does not belong to this group.'
+                'Poligons nepieder šij grupai.'
             );
         }
 
@@ -104,7 +104,7 @@ class GroupEventController extends Controller
             abort_unless(
                 Polygon::where('id', $data['polygon_id'])->where('group_id', $event->group_id)->exists(),
                 422,
-                'Polygon does not belong to this group.'
+                'Poligons nepieder šij grupai.'
             );
         }
 

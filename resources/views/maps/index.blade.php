@@ -251,7 +251,7 @@
           }, onGeoError, { enableHighAccuracy:true, maximumAge:0, timeout:20000 });
         });
 
-        // DrawingManager (deprecated by Google in 2025; plan to migrate before 2026 removal)
+        // DrawingManager jāmaina līdz 2026
         const drawingManager = new google.maps.drawing.DrawingManager({
           drawingMode:null, drawingControl:false,
           polylineOptions:{ strokeColor:'#10b981', strokeWeight:3, clickable:true, editable:true, geodesic:true },

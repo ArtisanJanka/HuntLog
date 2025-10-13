@@ -35,7 +35,7 @@ class GalleryItemController extends Controller
 
         GalleryItem::create($data);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery item created successfully!');
+        return redirect()->route('admin.gallery.index')->with('success', 'Veiksmīgi izveidots!');
     }
 
     public function edit(GalleryItem $galleryItem)
@@ -62,7 +62,7 @@ class GalleryItemController extends Controller
 
         $galleryItem->update($data);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery item updated successfully!');
+        return redirect()->route('admin.gallery.index')->with('success', 'Veiksmīgi atjaunināts!');
     }
 
 
@@ -74,6 +74,6 @@ class GalleryItemController extends Controller
 
         $galleryItem->delete();
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery item deleted successfully!');
+        return redirect()->route('admin.gallery.index')->with('success', 'Veiksmīgi izdzēsts!');
     }
 }

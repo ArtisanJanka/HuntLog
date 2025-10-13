@@ -4,38 +4,56 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class ProfileController extends Controller
 {
     public function edit(Request $request)
     {
-    $user = $request->user();
+        $user = $request->user();
+        $polygons = $user->polygons()->get();
 
-    $polygons = $user->polygons()->get();
-
-    return view('profile.edit', compact('user', 'polygons'));
+        return view('profile.edit', compact('user', 'polygons'));
     }
-
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'name'  => ['required', 'string', 'max:255'],
+            // Breeze expects the lowercase + unique rule with the user's id ignored
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
         ]);
 
-        $user->update($validated);
+        // Only reset verification if the email actually changed
+        if ($validated['email'] !== $user->email) {
+            $user->email_verified_at = null;
+        }
 
-        return back()->with('success', 'Profile updated!');
+        $user->fill($validated)->save();
+
+        // IMPORTANT: redirect to /profile, not back() or /
+        return Redirect::route('profile.edit');
     }
 
-    public function destroy()
+    public function destroy(Request $request)
     {
-        $user = Auth::user();
+        // Validate into the *userDeletion* error bag and use current_password
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        // Log out and clear session before deleting
+        Auth::logout();
         $user->delete();
 
-        return redirect('/')->with('success', 'Profile deleted.');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Breeze tests expect redirect to '/'
+        return Redirect::to('/');
     }
 }

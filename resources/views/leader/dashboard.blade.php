@@ -158,13 +158,18 @@
                  x-data="{ showPass:false }">
                 <div class="flex items-start gap-4 mb-6">
                     <div class="h-12 w-12 rounded-xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0 1 12 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
                     </div>
                     <div>
                         <h2 class="text-xl font-bold">Pievienot lietotāju grupai</h2>
                         <p class="text-gray-300 text-sm">Norādi grupu — lietotājs tiks izveidots un automātiski pievienots tai.</p>
                     </div>
                 </div>
+
+                {{-- Named route template for Alpine to inject the group id --}}
+                @php
+                    $addUserTpl = route('leader.groups.add-user', ['group' => '__ID__']);
+                @endphp
 
                 <div class="grid sm:grid-cols-3 gap-4 mb-4">
                     <div>
@@ -186,7 +191,9 @@
                     </div>
                 </div>
 
-                <form :action="selectedGroupId ? `/groups/${selectedGroupId}/members` : ''" method="POST" class="space-y-4">
+                {{-- UPDATED: action uses the named route template with Alpine --}}
+                <form :action="selectedGroupId ? '{{ $addUserTpl }}'.replace('__ID__', selectedGroupId) : ''"
+                      method="POST" class="space-y-4">
                     @csrf
                     <input type="hidden" name="role" :value="selectedRole">
 
@@ -545,7 +552,7 @@
                 todayD: now.getDate(),
 
                 // events
-                events: initialEvents,  // array of {id,title,start_at,end_at,group:{id,name},polygon:{id,name},meetup_place,notes}
+                events: initialEvents,
                 polygons,
 
                 // modals
@@ -656,4 +663,3 @@
         }
     </script>
 </x-app-layout>
-        
