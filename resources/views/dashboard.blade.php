@@ -3,7 +3,7 @@
         <div id="hero-bg" class="absolute inset-0 will-change-transform">
             <video
                 class="absolute inset-0 w-full h-full object-cover"
-                src="{{ asset('storage/videos/hunting.mp4') }}"
+                src="{{ asset('storage/app/public/videos/hunting.mp4') }}"
                 playsinline
                 muted
                 loop
