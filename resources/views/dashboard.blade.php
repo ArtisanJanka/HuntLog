@@ -85,9 +85,9 @@
 
       <div class="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur reveal">
         <img
-          src="{{ asset('storage/images/phone.jpg') }}"
-          alt="Karte priekšskatījums"
-          class="w-full h-[380px] object-cover"
+            src="https://smt-strapi-cms.s3.us-east-1.amazonaws.com/FGBLOG_hand_holding_phone_showing_private_land_boundaries_in_Hunt_Wise_1a6cf85aff.jpeg"
+            alt="HuntLog content preview"
+            class="h-[220px] w-full rounded-2xl object-cover sm:h-[360px]"
         >
         <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/20"></div>
 
@@ -305,7 +305,7 @@
     }
     function autoplay(){ timer = setInterval(() => go(index+1), 4500); }
     function resetAutoplay(){ if (timer) clearInterval(timer); if (!prefersReduced) autoplay(); }
-
+    
     let startX=0, currentX=0, dragging=false;
     const start = x => { dragging=true; startX=x; track.classList.add('grabbing'); };
     const move  = x => { if(!dragging) return; currentX = x-startX; track.style.transform = `translateX(calc(-${index*100}% + ${currentX}px))`; };

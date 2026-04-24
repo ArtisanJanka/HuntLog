@@ -413,7 +413,7 @@
                 <div class="mt-12 grid items-center gap-8 lg:mt-14 lg:grid-cols-[1.05fr_.95fr] lg:gap-10">
                     <div class="light-card overflow-hidden p-3">
                         <img
-                            src="{{ asset('storage/images/phone.jpg') }}"
+                            src="https://smt-strapi-cms.s3.us-east-1.amazonaws.com/FGBLOG_hand_holding_phone_showing_private_land_boundaries_in_Hunt_Wise_1a6cf85aff.jpeg"
                             alt="HuntLog content preview"
                             class="h-[220px] w-full rounded-2xl object-cover sm:h-[360px]"
                         >
