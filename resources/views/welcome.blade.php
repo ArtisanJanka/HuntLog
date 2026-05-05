@@ -5,52 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HuntLog</title>
 
+    {{-- For production, it is better to use compiled Tailwind with @vite instead of CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        @keyframes floatGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(18px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { opacity: .45; transform: scale(1); }
-            50% { opacity: .8; transform: scale(1.05); }
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         body {
             background:
-                radial-gradient(circle at top, rgba(16,185,129,0.10), transparent 22%),
-                radial-gradient(circle at 85% 20%, rgba(56,189,248,0.08), transparent 18%),
+                radial-gradient(circle at top, rgba(16,185,129,0.10), transparent 24%),
+                radial-gradient(circle at 85% 20%, rgba(56,189,248,0.07), transparent 20%),
                 linear-gradient(135deg, #04070a 0%, #071018 45%, #09131d 100%);
-            background-size: 200% 200%;
-            animation: floatGradient 18s ease infinite;
         }
 
         .bg-grid {
             background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 34px 34px;
-            mask-image: radial-gradient(circle at center, black 45%, transparent 90%);
-            -webkit-mask-image: radial-gradient(circle at center, black 45%, transparent 90%);
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 38px 38px;
         }
 
         .animate-fadeUp {
-            animation: fadeUp .8s ease both;
-        }
-
-        .glass {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255,255,255,0.10);
+            animation: fadeUp .55s ease both;
         }
 
         .focus-outline:focus {
@@ -60,11 +45,9 @@
 
         .header-shell {
             border-radius: 1.1rem;
-            background: rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.055);
             border: 1px solid rgba(255,255,255,0.10);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            box-shadow: 0 18px 50px rgba(0,0,0,.22);
+            box-shadow: 0 12px 32px rgba(0,0,0,.18);
         }
 
         .btn-primary {
@@ -77,13 +60,13 @@
             font-weight: 700;
             color: white;
             background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 14px 32px rgba(5,150,105,.28);
-            transition: .22s ease;
+            box-shadow: 0 10px 24px rgba(5,150,105,.25);
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 18px 36px rgba(5,150,105,.38);
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(5,150,105,.32);
             background: linear-gradient(135deg, #34d399, #059669);
         }
 
@@ -95,16 +78,16 @@
             padding: .95rem 1.35rem;
             font-weight: 700;
             color: white;
-            background: rgba(255,255,255,.06);
+            background: rgba(255,255,255,.065);
             border: 1px solid rgba(255,255,255,.12);
-            transition: .22s ease;
+            transition: transform .18s ease, color .18s ease, background .18s ease, border-color .18s ease;
         }
 
         .btn-secondary:hover {
             transform: translateY(-1px);
             color: #6ee7b7;
             background: rgba(255,255,255,.10);
-            border-color: rgba(16,185,129,.45);
+            border-color: rgba(16,185,129,.42);
         }
 
         .tiny-btn {
@@ -115,14 +98,14 @@
             padding: .72rem 1rem;
             font-size: .92rem;
             font-weight: 700;
-            transition: .2s ease;
+            transition: transform .16s ease, background .16s ease, color .16s ease, border-color .16s ease;
             white-space: nowrap;
         }
 
         .tiny-btn-primary {
             color: white;
             background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 12px 26px rgba(5,150,105,.22);
+            box-shadow: 0 8px 20px rgba(5,150,105,.18);
         }
 
         .tiny-btn-primary:hover {
@@ -132,14 +115,14 @@
 
         .tiny-btn-secondary {
             color: white;
-            background: rgba(255,255,255,.06);
+            background: rgba(255,255,255,.065);
             border: 1px solid rgba(255,255,255,.12);
         }
 
         .tiny-btn-secondary:hover {
             color: #6ee7b7;
             background: rgba(255,255,255,.10);
-            border-color: rgba(16,185,129,.45);
+            border-color: rgba(16,185,129,.42);
         }
 
         .hero-kicker {
@@ -166,21 +149,20 @@
             position: relative;
             overflow: hidden;
             border-radius: 2rem;
-            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
             border: 1px solid rgba(255,255,255,.10);
-            box-shadow: 0 30px 110px rgba(0,0,0,.45);
+            box-shadow: 0 22px 70px rgba(0,0,0,.36);
         }
 
         .preview-shell::before {
             content: "";
             position: absolute;
-            top: -20%;
-            right: -8%;
-            width: 220px;
-            height: 220px;
+            top: -70px;
+            right: -60px;
+            width: 190px;
+            height: 190px;
             border-radius: 9999px;
-            background: radial-gradient(circle, rgba(16,185,129,.22), transparent 65%);
-            animation: pulseGlow 5s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(16,185,129,.18), transparent 68%);
             pointer-events: none;
         }
 
@@ -193,16 +175,15 @@
             width: 100%;
             height: auto;
             object-fit: cover;
+            background: #071018;
         }
 
         .floating-chip {
             position: absolute;
             border-radius: 1rem;
-            background: rgba(8,12,18,.78);
+            background: rgba(8,12,18,.88);
             border: 1px solid rgba(255,255,255,.10);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 18px 40px rgba(0,0,0,.28);
+            box-shadow: 0 12px 28px rgba(0,0,0,.24);
         }
 
         .light-panel {
@@ -210,29 +191,33 @@
             background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
             border-top-left-radius: 2rem;
             border-top-right-radius: 2rem;
-            box-shadow: 0 -20px 80px rgba(0,0,0,.18);
+            box-shadow: 0 -16px 54px rgba(0,0,0,.14);
+            content-visibility: auto;
+            contain-intrinsic-size: 1200px;
         }
 
         .light-card {
             border-radius: 1.5rem;
             background: white;
             border: 1px solid rgba(15,23,42,.06);
-            box-shadow: 0 18px 45px rgba(15,23,42,.07);
+            box-shadow: 0 12px 30px rgba(15,23,42,.06);
         }
 
         .feature-card {
             border-radius: 1.5rem;
             background: white;
             border: 1px solid rgba(15,23,42,.06);
-            box-shadow: 0 16px 40px rgba(15,23,42,.06);
+            box-shadow: 0 10px 26px rgba(15,23,42,.055);
             padding: 1.5rem;
-            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(16,185,129,.25);
-            box-shadow: 0 22px 50px rgba(15,23,42,.10);
+        @media (hover: hover) and (pointer: fine) {
+            .feature-card:hover {
+                transform: translateY(-3px);
+                border-color: rgba(16,185,129,.22);
+                box-shadow: 0 16px 36px rgba(15,23,42,.08);
+            }
         }
 
         .feature-icon {
@@ -259,6 +244,20 @@
             color: #059669;
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .001ms !important;
+            }
+        }
+
         @media (max-width: 640px) {
             .header-shell {
                 border-radius: 1rem;
@@ -273,6 +272,7 @@
 
             .preview-shell {
                 border-radius: 1.25rem;
+                box-shadow: 0 16px 42px rgba(0,0,0,.30);
             }
 
             .light-panel {
@@ -298,9 +298,9 @@
 
 <body class="min-h-full text-white antialiased overflow-x-hidden">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div class="bg-grid absolute inset-0 opacity-50"></div>
-        <div class="absolute -top-20 right-[-6rem] h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl"></div>
-        <div class="absolute bottom-[-6rem] left-[-6rem] h-96 w-96 rounded-full bg-sky-500/10 blur-3xl"></div>
+        <div class="bg-grid absolute inset-0 opacity-35"></div>
+        <div class="absolute -top-20 right-[-6rem] h-80 w-80 rounded-full bg-emerald-500/10 blur-2xl"></div>
+        <div class="absolute bottom-[-6rem] left-[-6rem] h-96 w-96 rounded-full bg-sky-500/10 blur-2xl"></div>
     </div>
 
     {{-- HEADER --}}
@@ -308,7 +308,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 pt-4 sm:pt-6">
             <div class="header-shell flex items-center justify-between gap-3 px-3 py-3 sm:px-5">
                 <a href="{{ url('/') }}"
-                   class="font-extrabold tracking-wider transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded text-emerald-400 hover:text-emerald-300 text-lg sm:text-xl shrink-0">
+                   class="font-extrabold tracking-wider transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded text-emerald-400 hover:text-emerald-300 text-lg sm:text-xl shrink-0">
                     HuntLog
                 </a>
 
@@ -355,7 +355,7 @@
                     <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                         <a href="{{ route('register') }}" class="focus-outline btn-primary w-full sm:w-auto">
                             Sākt lietot
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7l7 7-7 7"/>
                             </svg>
                         </a>
@@ -366,7 +366,7 @@
                     </div>
                 </div>
 
-                <div class="relative mx-auto mt-10 max-w-5xl animate-fadeUp sm:mt-16" style="animation-delay:.12s;">
+                <div class="relative mx-auto mt-10 max-w-5xl animate-fadeUp sm:mt-16" style="animation-delay:.08s;">
                     <div class="preview-shell">
                         <div class="preview-topbar flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4">
                             <div class="flex items-center gap-2">
@@ -374,12 +374,19 @@
                                 <span class="h-3 w-3 rounded-full bg-yellow-400/80"></span>
                                 <span class="h-3 w-3 rounded-full bg-emerald-400/80"></span>
                             </div>
-                            <div class="rounded-full bg-white/10 px-3 py-1 text-[10px] sm:text-xs text-white/60">huntlog.app</div>
+                            <div class="rounded-full bg-white/10 px-3 py-1 text-[10px] sm:text-xs text-white/60">
+                                huntlog.app
+                            </div>
                         </div>
+
                         <img
-                            src="https://cdn.outsideonline.com/wp-content/uploads/2020/10/29/hunting-for-beginners-lead_h.jpg?auto=webp&width=3840&quality=75&fit=cover"
+                            src="https://cdn.outsideonline.com/wp-content/uploads/2020/10/29/hunting-for-beginners-lead_h.jpg?auto=webp&width=1600&quality=70&fit=cover"
                             alt="HuntLog preview"
                             class="hero-preview-image h-[220px] sm:h-[420px] lg:h-[560px]"
+                            width="1600"
+                            height="900"
+                            fetchpriority="high"
+                            decoding="async"
                         >
                     </div>
 
@@ -416,6 +423,10 @@
                             src="https://smt-strapi-cms.s3.us-east-1.amazonaws.com/FGBLOG_hand_holding_phone_showing_private_land_boundaries_in_Hunt_Wise_1a6cf85aff.jpeg"
                             alt="HuntLog content preview"
                             class="h-[220px] w-full rounded-2xl object-cover sm:h-[360px]"
+                            width="1200"
+                            height="760"
+                            loading="lazy"
+                            decoding="async"
                         >
                     </div>
 
@@ -475,7 +486,7 @@
                     </div>
                 </div>
 
-                <div class="mt-12 overflow-hidden rounded-[1.5rem] border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-sky-50 px-5 py-10 shadow-[0_24px_70px_rgba(15,23,42,0.08)] sm:mt-16 sm:rounded-[2rem] sm:px-8 sm:py-14">
+                <div class="mt-12 overflow-hidden rounded-[1.5rem] border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-sky-50 px-5 py-10 shadow-[0_18px_48px_rgba(15,23,42,0.07)] sm:mt-16 sm:rounded-[2rem] sm:px-8 sm:py-14">
                     <div class="max-w-3xl">
                         <span class="section-kicker-light">Gatavs sākt?</span>
                         <h3 class="mt-5 text-3xl font-black tracking-tight sm:mt-6 sm:text-5xl">
@@ -486,7 +497,9 @@
                         </p>
 
                         <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-                            <a href="{{ route('register') }}" class="focus-outline btn-primary w-full sm:w-auto">Reģistrēties</a>
+                            <a href="{{ route('register') }}" class="focus-outline btn-primary w-full sm:w-auto">
+                                Reģistrēties
+                            </a>
                             <a href="{{ route('login') }}" class="focus-outline btn-secondary w-full sm:w-auto !text-slate-800 !border-slate-200 !bg-white hover:!text-emerald-700 hover:!border-emerald-200">
                                 Pieteikties
                             </a>
@@ -497,7 +510,7 @@
         </section>
     </main>
 
-    <footer class="border-t border-white/10 bg-black/30 backdrop-blur">
+    <footer class="border-t border-white/10 bg-black/30">
         <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 text-center text-sm text-gray-400 sm:px-6 md:flex-row md:text-left">
             <span>&copy; {{ date('Y') }} HuntLog. Visas tiesības aizsargātas.</span>
             <div class="flex items-center gap-5">
